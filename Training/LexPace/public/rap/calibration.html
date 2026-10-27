@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LexPace - Accelerated Reading: Calibration</title>
+  <link rel="stylesheet" href="rap.css" />
+</head>
+<body>
+  <h1>Accelerated Reading - Step 1: Calibration</h1>
+  <p class="muted">Read the passage below at your own normal, comfortable pace - there is no time pressure on this step. We're only measuring your natural reading speed so we can set a personalized training pace for you later.</p>
+
+  <div class="card">
+    <p id="passage">Loading passage...</p>
+    <button id="startBtn">Start reading</button>
+    <button id="doneBtn" disabled>I've finished reading</button>
+  </div>
+
+  <p id="result" class="muted"></p>
+
+  <script src="rap.js"></script>
+  <script>
+    let passage = null;
+    let startTime = null;
+
+    async function loadPassage() {
+      const res = await fetch('/api/rap/calibration/start', { method: 'POST' });
+      passage = await res.json();
+      document.getElementById('passage').textContent = passage.text;
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      startTime = Date.now();
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('doneBtn').disabled = false;
+    });
+
+    document.getElementById('doneBtn').addEventListener('click', async () => {
+      const timeMs = Date.now() - startTime;
+      const res = await fetch('/api/rap/calibration/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ timeMs })
+      });
+      const profile = await res.json();
+      document.getElementById('result').textContent =
+        `Your baseline reading speed: ${profile.baselineWpm} words per minute. ` +
+        `Your training target: ${profile.targetWpm} wpm (10% faster, per the published protocol).`;
+
+      await fetch('/api/rap/enroll', { method: 'POST' });
+      setTimeout(() => { window.location.href = 'session.html'; }, 2500);
+    });
+
+    loadPassage();
+  </script>
+</body>
+</html>

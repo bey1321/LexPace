@@ -1,0 +1,18 @@
+/* LexPace integration: Blackboard colours for the screening test.
+   Colour tokens only (light mode). Fonts and sizes are untouched. Station hues are kept. */
+:root {
+  --lx-bg: var(--bb-page);
+  --lx-surface: var(--bb-surface);
+  --lx-surface-2: var(--bb-surface-2);
+  --lx-ink: var(--bb-ink);
+  --lx-muted: var(--bb-muted);
+  --lx-line: var(--bb-border);
+  --lx-band: var(--bb-topbar);
+  --lx-band-ink: var(--bb-on-dark);
+  --lx-band-muted: #bdbdbd;
+  --lx-band-line: var(--bb-topbar-line);
+  --lx-accent: var(--bb-banner);
+  --lx-accent-ink: #ffffff;
+  --lx-accent-soft: #f1e7f3;
+  --lx-amber: var(--bb-accent);
+}

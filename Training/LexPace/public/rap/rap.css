@@ -1,0 +1,65 @@
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 0 20px;
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+h1 { font-size: 1.4rem; }
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 24px;
+  margin: 20px 0;
+  background: #fafafa;
+}
+
+.sentence {
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+  min-height: 2.5em;
+  margin: 24px 0;
+}
+
+.sentence .masked {
+  color: transparent;
+  background: #cfd4da;
+  border-radius: 3px;
+}
+
+button {
+  font-size: 1rem;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: white;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button.secondary {
+  background: white;
+  color: #1a1a1a;
+}
+
+.choices button {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  background: white;
+  color: #1a1a1a;
+}
+
+.choices button.correct { background: #d7f5dd; border-color: #2e8b3f; }
+.choices button.incorrect { background: #fbdede; border-color: #b3261e; }
+
+.progress-row { display: flex; justify-content: space-between; margin: 10px 0; }
+.muted { color: #666; font-size: 0.9rem; }

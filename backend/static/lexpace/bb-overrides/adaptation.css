@@ -1,0 +1,12 @@
+/* LexPace integration: Blackboard colours for the adaptive lecture.
+   Colour tokens only (light mode). The per-profile colours (--pc) are set by the page's
+   own script and are kept, because they tell the profiles apart. */
+:root {
+  --bg: var(--bb-page);
+  --paper: var(--bb-surface);
+  --ink: var(--bb-ink);
+  --rule: var(--bb-border);
+  --brand: var(--bb-banner);
+  --brandfill: rgba(92, 66, 97, .09);
+  --calcbg: #f3eef4;
+}

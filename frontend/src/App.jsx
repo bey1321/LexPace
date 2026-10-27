@@ -1,0 +1,41 @@
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
+import Sidebar from "./components/Sidebar.jsx";
+import HelpButton from "./components/HelpButton.jsx";
+import Profile from "./pages/Profile.jsx";
+import Courses from "./pages/Courses.jsx";
+import Tools from "./pages/Tools.jsx";
+import ToolFrame from "./pages/ToolFrame.jsx";
+import EmptyPage from "./pages/EmptyPage.jsx";
+import CoursePage from "./pages/CoursePage.jsx";
+
+function Shell() {
+  return (
+    <div className="shell">
+      <Sidebar />
+      <main className="shell-main"><Outlet /></main>
+      <HelpButton />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<Shell />}>
+        <Route index element={<Navigate to="/courses" replace />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="activity" element={<EmptyPage title="Activity" icon="globe" text="You're all caught up. New activity in your courses will show up here." />} />
+        <Route path="courses" element={<Courses />} />
+        <Route path="calendar" element={<EmptyPage title="Calendar" icon="calendar" text="Nothing is scheduled. Due dates and course events will show up here." />} />
+        <Route path="messages" element={<EmptyPage title="Messages" icon="mail" text="No messages yet." />} />
+        <Route path="grades" element={<EmptyPage title="Grades" icon="grades" text="No grades have been posted yet." />} />
+        <Route path="tools" element={<Tools />} />
+        <Route path="tools/screening" element={<ToolFrame title="LexPace Screening" src="/lexpace/screening/" />} />
+        <Route path="tools/training" element={<ToolFrame title="LexPace Training" src="/lexpace/training/dev/login?userId=2023006229&course=ca" />} />
+        <Route path="signout" element={<EmptyPage title="Signed out" icon="signout" text="This is a demo, so there is nothing to sign out of. Pick any item on the left to continue." />} />
+      </Route>
+      <Route path="courses/:courseId/*" element={<CoursePage />} />
+      <Route path="*" element={<Navigate to="/courses" replace />} />
+    </Routes>
+  );
+}

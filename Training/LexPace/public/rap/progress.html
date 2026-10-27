@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LexPace - Accelerated Reading: Progress</title>
+  <link rel="stylesheet" href="rap.css" />
+</head>
+<body>
+  <h1>Your Accelerated Reading Progress</h1>
+  <div class="card" id="progressBox">Loading...</div>
+  <p><a href="session.html">Start another session</a></p>
+
+  <script>
+    async function loadProgress() {
+      const res = await fetch('/api/rap/progress');
+      const p = await res.json();
+      const box = document.getElementById('progressBox');
+
+      if (!p.baselineWpm) {
+        box.innerHTML = '<p>No calibration on record yet. <a href="calibration.html">Start here</a>.</p>';
+        return;
+      }
+
+      const rows = p.wpmTrend.map((w, i) => {
+        const c = p.comprehensionTrend[i];
+        return `<div class="progress-row"><span>Session ${w.sessionNumber}</span><span>${w.wpm} wpm</span><span>${c.pct}% understood</span></div>`;
+      }).join('');
+
+      box.innerHTML = `
+        <p>Baseline: ${p.baselineWpm} wpm &nbsp;|&nbsp; Current target: ${p.targetWpm} wpm</p>
+        <p>${p.sessionsCompleted} of ${p.targetSessionCount} sessions completed</p>
+        <hr/>
+        ${rows || '<p class="muted">No completed sessions yet.</p>'}
+      `;
+    }
+    loadProgress();
+  </script>
+</body>
+</html>

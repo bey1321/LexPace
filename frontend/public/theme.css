@@ -1,0 +1,28 @@
+/* Blackboard Ultra palette for the LexPace demo.
+   Every value was sampled from the real screenshots in /screenshots (PIL, see README).
+   Used by the React shell and, through /lexpace/bb-overrides/*.css, by the three LexPace parts. */
+:root {
+  --bb-sidebar: #262626;        /* left navigation background */
+  --bb-sidebar-active: #000000; /* active navigation item */
+  --bb-sidebar-line: #1d1d1d;   /* divider under the logo */
+  --bb-accent: #c56fd5;         /* purple active bar + active course tab underline */
+  --bb-topbar: #262626;         /* course top bar + course tabs */
+  --bb-topbar-line: #404040;    /* rule between top bar and tabs */
+  --bb-banner: #5c4261;         /* course banner purple (light) */
+  --bb-banner-2: #49354d;       /* course banner purple (dark) */
+  --bb-banner-3: #0a080b;       /* banner fades to near black */
+  --bb-page: #f8f8f8;           /* page background */
+  --bb-surface: #ffffff;        /* cards, panels, headers */
+  --bb-surface-2: #f0f0f0;      /* To Do empty boxes, chips */
+  --bb-border: #cdcdcd;         /* card borders, header rule */
+  --bb-border-soft: #e5e5e5;    /* course content card edges, table rows */
+  --bb-ink: #262626;            /* body text */
+  --bb-muted: #666666;          /* secondary text */
+  --bb-link: #2073a1;           /* links */
+  --bb-badge: #046df6;          /* OPEN badge */
+  --bb-on-dark: #ffffff;
+
+  --bb-font: "Open Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --bb-font-nav: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --bb-font-title: Georgia, "Times New Roman", serif;
+}

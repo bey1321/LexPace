@@ -1,0 +1,8 @@
+/* LexPace integration: Blackboard colours for the training app.
+   Injected by the FastAPI proxy, so Training/LexPace stays unchanged. Colours only. */
+body { color: var(--bb-ink); background: var(--bb-page); }
+a { color: var(--bb-link); }
+.card { border-color: var(--bb-border); background: var(--bb-surface); }
+button { background: var(--bb-banner); border-color: var(--bb-banner); color: #fff; }
+button.secondary, .choices button { background: var(--bb-surface); color: var(--bb-ink); border-color: var(--bb-border); }
+.muted { color: var(--bb-muted); }

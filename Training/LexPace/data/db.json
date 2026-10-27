@@ -1,0 +1,348 @@
+{
+  "rapProfiles": [
+    {
+      "userId": "student3",
+      "dyslexiaProfile": "unprofiled",
+      "baselineWpm": 979,
+      "baselineMeasuredAt": "2026-10-27T18:29:26.001Z",
+      "targetWpm": 1077,
+      "enrolledAt": "2026-10-27T18:29:26.006Z",
+      "targetSessionCount": 20
+    },
+    {
+      "userId": "2023006229",
+      "dyslexiaProfile": "unprofiled",
+      "baselineWpm": 632,
+      "baselineMeasuredAt": "2026-10-27T22:54:53.089Z",
+      "targetWpm": 695,
+      "enrolledAt": "2026-10-27T22:54:53.101Z",
+      "targetSessionCount": 20
+    }
+  ],
+  "sentencePool": [
+    {
+      "id": "apnlG8aOaC-efhQm1Q8QI",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Topics include information security vulnerabilities, threats, and risk management.",
+      "keyword": "vulnerabilities",
+      "wordCount": 9,
+      "charCount": 82,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "VnagN8vAPTOsgLNUavXSt",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Students with disabilities may find they require additional support, services, or considerations.",
+      "keyword": "considerations",
+      "wordCount": 12,
+      "charCount": 97,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "G8Jdtf96hfY-MtFV847Vn",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "AURAK will endeavor to support students with disabilities where resources are available.",
+      "keyword": "disabilities",
+      "wordCount": 12,
+      "charCount": 88,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "V7SczDAeZRk52uVTylTMg",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Disability accommodations are never applied retroactively to a given academic semester.",
+      "keyword": "accommodations",
+      "wordCount": 11,
+      "charCount": 87,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "Qqp82yEQ55Z73UEKV9N-k",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Students needing support must make the request from the Department of Counseling.",
+      "keyword": "Department",
+      "wordCount": 12,
+      "charCount": 81,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "Ph6qoEci4hXgsPpCE2Rzu",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "The American University of Ras Al Khaimah strongly supports the concept of academic integrity.",
+      "keyword": "University",
+      "wordCount": 14,
+      "charCount": 94,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "adalk0tad0-Ai5gp491hT",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "The Honor Code is an integral part of university life at the university.",
+      "keyword": "university",
+      "wordCount": 13,
+      "charCount": 72,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "_bFM68fPE33pV1qb4mhDf",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Students are responsible for understanding and abiding by the code's provisions.",
+      "keyword": "understanding",
+      "wordCount": 11,
+      "charCount": 80,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "-yy7fJzfaNLNaKK2_1-mj",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Cheating, plagiarism, and all other forms of academic fraud are unacceptable at this university.",
+      "keyword": "unacceptable",
+      "wordCount": 14,
+      "charCount": 96,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "Ctk8gETTQaJogiyI2Le6S",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Plagiarism submitting the work of others as one's own is a serious offense.",
+      "keyword": "Plagiarism",
+      "wordCount": 13,
+      "charCount": 75,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "j7Sb20upf3R1-vL8wQQ1Y",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "In the academic world, plagiarism is considered a form of theft.",
+      "keyword": "plagiarism",
+      "wordCount": 11,
+      "charCount": 64,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "ZzbuSCjrqkNA70X5B9ihm",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Information from sources must be given credit through specific citations in every case.",
+      "keyword": "Information",
+      "wordCount": 13,
+      "charCount": 87,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "QDkyXblbuugeIo4ar2sPJ",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Merely rearranging a sentence or changing a few words is not sufficient.",
+      "keyword": "rearranging",
+      "wordCount": 12,
+      "charCount": 72,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "-7BxPY-t3-l3wqSlc9Y1P",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "It is the responsibility of the instructor to provide students with additional guidelines.",
+      "keyword": "responsibility",
+      "wordCount": 13,
+      "charCount": 90,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "ESEaITcRE5E46hPmeCnwf",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "University policy is that assignments are due on the date assigned.",
+      "keyword": "assignments",
+      "wordCount": 11,
+      "charCount": 67,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "kJkqmAc6W_SRPPfnoeqGQ",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Instructors may refuse to accept late assignments or lower the grade.",
+      "keyword": "Instructors",
+      "wordCount": 11,
+      "charCount": 69,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "PCyXaVgE07FGUZJwjP-hh",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "Students may not have a mobile telephone in their possession while completing examinations.",
+      "keyword": "examinations",
+      "wordCount": 13,
+      "charCount": 91,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "RVg4Ykad2WfiKoDu0RmF6",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "English is the common language of the AURAK campus for everyone.",
+      "keyword": "language",
+      "wordCount": 11,
+      "charCount": 64,
+      "used": false,
+      "usedInSessionId": null
+    },
+    {
+      "id": "C5VvMtwzPGdhDqXGT--SY",
+      "sourceContentId": "csci450-syllabus-2026",
+      "courseId": "csci450",
+      "text": "AURAK brings together students and faculty from diverse cultural and linguistic backgrounds.",
+      "keyword": "backgrounds",
+      "wordCount": 12,
+      "charCount": 92,
+      "used": false,
+      "usedInSessionId": null
+    }
+  ],
+  "sessions": [
+    {
+      "id": "J7WgSDxqAWwTJPyeplG7C",
+      "userId": "student3",
+      "sessionNumber": 1,
+      "startedAt": "2026-10-26T21:55:16.426Z",
+      "completedAt": null,
+      "targetWpmSnapshot": 824,
+      "status": "in_progress",
+      "sentenceIds": [
+        "apnlG8aOaC-efhQm1Q8QI",
+        "VnagN8vAPTOsgLNUavXSt",
+        "G8Jdtf96hfY-MtFV847Vn",
+        "V7SczDAeZRk52uVTylTMg",
+        "Qqp82yEQ55Z73UEKV9N-k",
+        "Ph6qoEci4hXgsPpCE2Rzu",
+        "adalk0tad0-Ai5gp491hT",
+        "_bFM68fPE33pV1qb4mhDf"
+      ],
+      "comprehensionTotal": 0,
+      "comprehensionCorrect": 0,
+      "actualAvgWpmAchieved": null
+    },
+    {
+      "id": "OtpyRamJsXpZ-u6QGQUq5",
+      "userId": "student3",
+      "sessionNumber": 2,
+      "startedAt": "2026-10-26T21:56:40.356Z",
+      "completedAt": null,
+      "targetWpmSnapshot": 1148,
+      "status": "in_progress",
+      "sentenceIds": [
+        "apnlG8aOaC-efhQm1Q8QI",
+        "VnagN8vAPTOsgLNUavXSt",
+        "G8Jdtf96hfY-MtFV847Vn",
+        "V7SczDAeZRk52uVTylTMg",
+        "Qqp82yEQ55Z73UEKV9N-k",
+        "Ph6qoEci4hXgsPpCE2Rzu",
+        "adalk0tad0-Ai5gp491hT",
+        "_bFM68fPE33pV1qb4mhDf"
+      ],
+      "comprehensionTotal": 0,
+      "comprehensionCorrect": 0,
+      "actualAvgWpmAchieved": null
+    },
+    {
+      "id": "v4r_vl-sI-dNC5I2bgDGU",
+      "userId": "student3",
+      "sessionNumber": 3,
+      "startedAt": "2026-10-27T18:29:28.538Z",
+      "completedAt": null,
+      "targetWpmSnapshot": 1077,
+      "status": "in_progress",
+      "sentenceIds": [
+        "apnlG8aOaC-efhQm1Q8QI",
+        "VnagN8vAPTOsgLNUavXSt",
+        "G8Jdtf96hfY-MtFV847Vn",
+        "V7SczDAeZRk52uVTylTMg",
+        "Qqp82yEQ55Z73UEKV9N-k",
+        "Ph6qoEci4hXgsPpCE2Rzu",
+        "adalk0tad0-Ai5gp491hT",
+        "_bFM68fPE33pV1qb4mhDf"
+      ],
+      "comprehensionTotal": 0,
+      "comprehensionCorrect": 0,
+      "actualAvgWpmAchieved": null
+    },
+    {
+      "id": "7ay_gGCCoPrkuoP8zV5Py",
+      "userId": "2023006229",
+      "sessionNumber": 1,
+      "startedAt": "2026-10-27T22:54:53.313Z",
+      "completedAt": null,
+      "targetWpmSnapshot": 695,
+      "status": "in_progress",
+      "sentenceIds": [
+        "apnlG8aOaC-efhQm1Q8QI",
+        "VnagN8vAPTOsgLNUavXSt",
+        "G8Jdtf96hfY-MtFV847Vn",
+        "V7SczDAeZRk52uVTylTMg",
+        "Qqp82yEQ55Z73UEKV9N-k",
+        "Ph6qoEci4hXgsPpCE2Rzu",
+        "adalk0tad0-Ai5gp491hT",
+        "_bFM68fPE33pV1qb4mhDf"
+      ],
+      "comprehensionTotal": 0,
+      "comprehensionCorrect": 0,
+      "actualAvgWpmAchieved": null
+    },
+    {
+      "id": "RFB3-SprcLv9Q1s8wm5Qd",
+      "userId": "2023006229",
+      "sessionNumber": 2,
+      "startedAt": "2026-10-27T22:55:09.277Z",
+      "completedAt": null,
+      "targetWpmSnapshot": 695,
+      "status": "in_progress",
+      "sentenceIds": [
+        "apnlG8aOaC-efhQm1Q8QI",
+        "VnagN8vAPTOsgLNUavXSt",
+        "G8Jdtf96hfY-MtFV847Vn",
+        "V7SczDAeZRk52uVTylTMg",
+        "Qqp82yEQ55Z73UEKV9N-k",
+        "Ph6qoEci4hXgsPpCE2Rzu",
+        "adalk0tad0-Ai5gp491hT",
+        "_bFM68fPE33pV1qb4mhDf"
+      ],
+      "comprehensionTotal": 0,
+      "comprehensionCorrect": 0,
+      "actualAvgWpmAchieved": null
+    }
+  ],
+  "attempts": [],
+  "recalibrations": [],
+  "oversightLinks": []
+}

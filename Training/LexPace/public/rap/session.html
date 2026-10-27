@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LexPace - Accelerated Reading: Session</title>
+  <link rel="stylesheet" href="rap.css" />
+</head>
+<body>
+  <h1>Accelerated Reading - Training Session</h1>
+  <p class="muted" id="status">Loading your session...</p>
+
+  <div class="card">
+    <div class="sentence" id="sentenceBox"></div>
+    <button id="readyBtn" style="display:none;">Ready - start this sentence</button>
+    <div class="choices" id="choices" style="display:none;"></div>
+  </div>
+
+  <p class="muted" id="summary"></p>
+  <p><a href="progress.html">View my progress</a></p>
+
+  <script src="rap.js"></script>
+  <script>
+    let session = null;
+    let current = 0;
+    const results = [];
+    let sentenceStartTime = null;
+
+    async function loadSession() {
+      const res = await fetch('/api/rap/session/next');
+      if (!res.ok) {
+        const err = await res.json();
+        document.getElementById('status').textContent = 'Could not start session: ' + err.error;
+        return;
+      }
+      session = await res.json();
+      document.getElementById('status').textContent =
+        `Session in progress - your target pace is ${session.targetWpm} words per minute.`;
+      showSentence();
+    }
+
+    function showSentence() {
+      if (current >= session.sentences.length) {
+        return finishSession();
+      }
+      const s = session.sentences[current];
+      const box = document.getElementById('sentenceBox');
+      box.textContent = s.text;
+      document.getElementById('readyBtn').style.display = 'inline-block';
+      document.getElementById('choices').style.display = 'none';
+      document.getElementById('readyBtn').disabled = false;
+    }
+
+    document.getElementById('readyBtn').addEventListener('click', () => {
+      document.getElementById('readyBtn').style.display = 'none';
+      const s = session.sentences[current];
+      const box = document.getElementById('sentenceBox');
+      sentenceStartTime = Date.now();
+      runMaskingSweep(box, s.text, s.budgetMs, showQuestion);
+    });
+
+    function showQuestion() {
+      const s = session.sentences[current];
+      const others = session.sentences.filter((x) => x.id !== s.id).map((x) => x.keyword);
+      const distractors = shuffle(others).slice(0, 2);
+      const options = shuffle([s.keyword, ...distractors]);
+
+      const choicesEl = document.getElementById('choices');
+      choicesEl.innerHTML = '<p>What was that sentence mainly about?</p>';
+      choicesEl.style.display = 'block';
+
+      options.forEach((opt) => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.addEventListener('click', () => {
+          const responseTimeMs = Date.now() - sentenceStartTime;
+          const isCorrect = opt === s.keyword;
+          btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+          results.push({ sentenceId: s.id, actualTimeMs: responseTimeMs, comprehensionCorrect: isCorrect });
+          Array.from(choicesEl.querySelectorAll('button')).forEach((b) => (b.disabled = true));
+          setTimeout(() => {
+            current += 1;
+            showSentence();
+          }, 700);
+        });
+        choicesEl.appendChild(btn);
+      });
+    }
+
+    async function finishSession() {
+      document.getElementById('sentenceBox').textContent = '';
+      document.getElementById('status').textContent = 'Session complete - saving your results...';
+      const res = await fetch(`/api/rap/session/${session.sessionId}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sentenceResults: results })
+      });
+      const summary = await res.json();
+      const pct = Math.round((summary.comprehensionCorrect / summary.comprehensionTotal) * 100);
+      document.getElementById('status').textContent = 'Session complete.';
+      document.getElementById('summary').textContent =
+        `Session #${summary.sessionNumber}: ${summary.actualAvgWpmAchieved} wpm achieved, ${pct}% comprehension.`;
+    }
+
+    loadSession();
+  </script>
+</body>
+</html>

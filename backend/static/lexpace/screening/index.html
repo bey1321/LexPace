@@ -1,0 +1,44 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>LexPace Reading Journey (Copy)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles/lexpace-games.css">
+<style>body { background: var(--lx-bg); margin: 0; }</style>
+<!-- LexPace integration: Blackboard colour override -->
+<link rel="stylesheet" href="/theme.css">
+<link rel="stylesheet" href="../bb-overrides/screening.css">
+
+<div id="journey"></div>
+
+<script type="module">
+  import { createJourney } from "./src/lexpace-games.js";
+
+  // LexPace integration: hand the screening profile to the Blackboard shell and the adapted lecture
+  const LX_PROFILE_IDS = { none: "base", phonological: "phon", surface: "surf", rapid_naming: "rapid", double_deficit: "double", mixed: "mixed" };
+  window.lexpaceHandOff = (payload) => {
+    const id = LX_PROFILE_IDS[payload.result.profile] || "base";
+    try { localStorage.setItem("pl2-prof", JSON.stringify(id)); } catch {}
+    fetch("/api/lexpace/profile", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ profile: id, source: "screening" }) }).catch(() => {});
+    setTimeout(() => {
+      const results = document.querySelector("#journey .lx-results");
+      if (!results || results.querySelector(".lx-handoff")) return;
+      const btn = Object.assign(document.createElement("button"), { className: "lx-btn", textContent: "Open my adapted lecture" });
+      btn.onclick = () => { window.top.location.href = "/courses/ca/lexpace"; };
+      const row = Object.assign(document.createElement("div"), { className: "lx-row lx-handoff" });
+      row.append(btn);
+      results.prepend(row);
+    });
+  };
+
+  createJourney(document.getElementById("journey"), {
+    model: "model/lexpace_model.json", // trained on synthetic data; remove for rules only
+    teamView: true,                    // false in production: students only see their own message
+    onEvent: (e) => console.debug("[lexpace]", e.type, e),
+    onComplete: (payload) => { console.info("[lexpace] features", payload.features); window.lexpaceHandOff(payload); },
+    onShare: (payload) => console.info("[lexpace] share with SAS", payload.sessionId),
+  });
+</script>
+
+</body></html>
