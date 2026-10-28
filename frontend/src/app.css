@@ -115,7 +115,6 @@ button { font: inherit; color: inherit; }
 .course-tab { color: #fff; text-decoration: none; font-size: 18px; padding: 18px 14px 15px; border-bottom: 4px solid transparent; white-space: nowrap; }
 .course-tab:hover { border-bottom-color: #777; }
 .course-tab.is-active { font-weight: 700; border-bottom-color: var(--bb-accent); }
-.course-tab.is-lexpace::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--bb-accent); margin-right: 8px; vertical-align: 2px; }
 .course-banner { position: relative; height: 245px; overflow: hidden; display: flex; align-items: flex-end; padding: 0 40px 26px;
   background: linear-gradient(180deg, transparent 50%, var(--bb-banner-3) 100%), linear-gradient(90deg, var(--bb-banner-2), var(--bb-banner) 40%, var(--bb-banner-2)); }
 .course-banner::before { content: ""; position: absolute; left: -10%; top: -340px; width: 90%; height: 450px; border-radius: 50%; background: rgba(255, 255, 255, .06); }

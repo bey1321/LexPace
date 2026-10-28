@@ -3,7 +3,6 @@ import Icon from "../components/Icon.jsx";
 import { useApi } from "../api.js";
 import HelpButton from "../components/HelpButton.jsx";
 import ContentTab from "./ContentTab.jsx";
-import LexPaceTab, { LectureViewer, ScreeningView } from "./LexPaceTab.jsx";
 
 const TABS = [
   ["content", "Content"],
@@ -14,7 +13,6 @@ const TABS = [
   ["messages", "Messages"],
   ["groups", "Groups"],
   ["achievements", "Achievements"],
-  ["lexpace", "LexPace"],
 ];
 
 function TabEmpty({ label }) {
@@ -44,22 +42,22 @@ export default function CoursePage() {
       </div>
       <nav className="course-tabs" aria-label="Course navigation">
         {TABS.map(([id, label]) => (
-          <NavLink key={id} to={`/courses/${courseId}/${id}`} className={({ isActive }) => "course-tab" + (isActive ? " is-active" : "") + (id === "lexpace" ? " is-lexpace" : "")}>
+          <NavLink key={id} to={`/courses/${courseId}/${id}`} className={({ isActive }) => "course-tab" + (isActive ? " is-active" : "")}>
             {label}
           </NavLink>
         ))}
       </nav>
       <Routes>
         <Route index element={<Navigate to="content" replace />} />
-        <Route path="lexpace/screening" element={<ScreeningView courseId={courseId} />} />
-        <Route path="lexpace/:materialId" element={<LectureViewer courseId={courseId} />} />
+        {/* LexPace moved to its own place in the sidebar */}
+        <Route path="lexpace/screening" element={<Navigate to="/lexpace-hub/check" replace />} />
+        <Route path="lexpace/*" element={<Navigate to={`/lexpace-hub/courses/${courseId}`} replace />} />
         <Route path="*" element={
           <>
             <div className="course-banner"><h1>{title}</h1></div>
             <Routes>
               <Route path="content" element={<ContentTab courseId={courseId} instructor={course?.instructor} />} />
-              <Route path="lexpace" element={<LexPaceTab courseId={courseId} />} />
-              {TABS.filter(([id]) => id !== "content" && id !== "lexpace").map(([id, label]) => (
+              {TABS.filter(([id]) => id !== "content").map(([id, label]) => (
                 <Route key={id} path={id} element={<TabEmpty label={label} />} />
               ))}
               <Route path="*" element={<Navigate to="content" replace />} />

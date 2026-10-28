@@ -1,0 +1,17 @@
+/* LexPace hub: same look as the Tools page, inside the Blackboard shell. */
+.lxh { display: flex; flex-direction: column; min-height: 100vh; background: var(--bb-page); }
+.lxh-body { padding: 30px 38px; max-width: 1100px; width: 100%; box-sizing: border-box; }
+.lxh-h2 { font-size: 26px; font-weight: 400; margin: 12px 0 18px; }
+.lxh-muted { color: var(--bb-muted); margin: -8px 0 20px; }
+.lxh-link { color: var(--bb-ink); text-decoration: none; }
+.lxh-status { font-weight: 700; color: var(--bb-muted); }
+.lxh-status.is-ready { color: #1f6b3a; }
+.lxh-generate { margin-top: 16px; }
+.lxh-note { min-height: 1.6em; margin-top: 14px; font-size: 17px; }
+
+/* Full-height views (check, training, a chapter) */
+.lxh-frame { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.lxh-frame .lexpace-frame { min-height: 600px; }
+.lxh-welcome-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.lxh-hint { margin: 0 0 20px; font-size: 17px; color: var(--bb-muted); }
+.lxh-hint a { color: var(--bb-link); }

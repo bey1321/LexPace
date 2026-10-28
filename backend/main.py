@@ -3,6 +3,7 @@
 - /api/...                 small JSON API backed by data/demo.json
 - /api/screening/...       adaptive EN/AR screening (LLM item generation, evaluation, features, classifier)
 - /lexpace/...             screening + adaptation, served as static files (copies of the originals)
+- /api/sas/...             SAS Portal API (sas.py); the staff page is /lexpace/sas/
 - /lexpace/training/...    reverse proxy to the training app's own Node server
 - /api/rap, /rap, /dev/login, /internal/rap
                            also proxied: the training app uses these absolute paths
@@ -23,6 +24,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from screening.router import create_router as create_screening_router
+from sas import create_router as create_sas_router
 
 HERE = Path(__file__).resolve().parent
 DATA_FILE = HERE / "data" / "demo.json"
@@ -142,6 +144,9 @@ def save_screening_result(classification: dict) -> None:
 
 
 app.include_router(create_screening_router(on_result=save_screening_result))
+
+# SAS Portal (staff side) and the student routes that send requests to it. Page: /lexpace/sas/
+app.include_router(create_sas_router(get_me=lambda: load_data()["me"]))
 
 
 # ---------------------------------------------------------------- training proxy
