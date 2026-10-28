@@ -1,13 +1,17 @@
 // Rule-based result. This is the safety net: it always runs, even when an ML model is loaded,
 // and every rule can be explained to SAS in one sentence.
+//
+// Output is three skill flags, never a condition label:
+//   skills = { reading, writing, math }   (true = this skill could use support)
+//   scores = { reading, writing, math }   (0–1, how strong the signal is; used to pick one version)
 
-export const PROFILE_LABELS = {
-  none: "No clear profile",
-  phonological: "Phonological",
-  surface: "Surface",
-  rapid_naming: "Rapid naming (slow but accurate)",
-  double_deficit: "Double deficit",
-  mixed: "Mixed (phonological + surface)",
+export const SKILL_LABELS = { reading: "Reading", writing: "Writing", math: "Calculation" };
+
+export const VERSION_LABELS = {
+  base: "Base lesson",
+  read: "Reading support",
+  write: "Writing support",
+  calc: "Calculation support",
 };
 
 export function evaluateRules(f, T) {
@@ -22,18 +26,22 @@ export function evaluateRules(f, T) {
     understood: f.read_comp >= T.readComp,
   };
 
-  let profile = "none";
-  if (flags.soundWeak && flags.slow) profile = "double_deficit";
-  else if (flags.soundWeak && flags.irregularWorse) profile = "mixed";
-  else if (flags.soundWeak) profile = "phonological";
-  else if ((flags.spellingWeak && flags.mostlySoundRight) || flags.irregularWorse) profile = "surface";
-  else if (flags.slow && flags.understood) profile = "rapid_naming";
+  // Reading: any of the reading signals from the seven games.
+  const readingSignals = [flags.soundWeak, flags.spellingWeak, flags.irregularWorse, flags.slow];
+  const reading = readingSignals.some(Boolean);
 
-  const currentWeak = flags.soundWeak || flags.spellingWeak || flags.slow;
+  // TODO(writing): the screening has no writing task yet (Echo checks spelling, which counts as a
+  // reading signal above). Add a writing task, then set writing + scores.writing from it.
+  // TODO(math): the screening has no calculation task yet (Number Recall is memory, not maths).
+  // Add a maths task, then set math + scores.math from it.
+  const skills = { reading, writing: false, math: false };
+  const scores = { reading: readingSignals.filter(Boolean).length / readingSignals.length, writing: 0, math: 0 };
+
+  const currentWeak = skills.reading || skills.writing || skills.math;
   let decision = "none";
   if (flags.historyHigh && currentWeak) decision = "suggest";
   else if (flags.historyHigh) decision = "cope"; // difficulty as a child, coping well now
   else if (flags.soundWeak && (flags.spellingWeak || flags.slow)) decision = "suggest";
 
-  return { flags, profile, decision };
+  return { flags, skills, scores, decision };
 }

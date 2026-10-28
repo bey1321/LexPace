@@ -1,6 +1,6 @@
 import { h, icon } from "../core/dom.js";
 import { FEATURES, toCSV } from "../scoring/features.js";
-import { PROFILE_LABELS } from "../scoring/rules.js";
+import { SKILL_LABELS, VERSION_LABELS } from "../scoring/rules.js";
 
 const MESSAGES = {
   suggest: ["A reading-support check with SAS could help you",
@@ -35,7 +35,7 @@ const fmt = (f, v) => {
 };
 
 export function renderResults({ payload, thresholds: T, teamView = true, onShare }) {
-  const { decision, profile, profileSource, rules, model } = payload.result;
+  const { decision, skills, scores, version, rules, model } = payload.result;
   const [title, text] = MESSAGES[decision];
 
   const share = decision !== "none" && h("div", { class: "lx-row" },
@@ -49,11 +49,12 @@ export function renderResults({ payload, thresholds: T, teamView = true, onShare
 
   if (!teamView) return h("div", { class: "lx-results" }, student);
 
-  const bars = model && h("div", { class: "lx-probs" }, Object.entries(model.probs).sort((a, b) => b[1] - a[1]).map(([k, p]) =>
-    h("div", { class: "lx-prob" + (k === model.top ? " is-top" : "") },
-      h("span", {}, PROFILE_LABELS[k] || k),
-      h("span", { class: "lx-prob-track" }, h("i", { style: { width: (p * 100).toFixed(1) + "%" } })),
-      h("b", {}, Math.round(p * 100) + "%"))));
+  const bars = h("div", { class: "lx-probs" }, Object.keys(SKILL_LABELS).map((k) =>
+    h("div", { class: "lx-prob" + (skills[k] ? " is-top" : "") },
+      h("span", {}, SKILL_LABELS[k]),
+      h("span", { class: "lx-prob-track" }, h("i", { style: { width: (scores[k] * 100).toFixed(1) + "%" } })),
+      h("b", {}, skills[k] ? "Flag" : "–"))));
+  const skillList = (s) => Object.keys(SKILL_LABELS).filter((k) => s[k]).map((k) => SKILL_LABELS[k]).join(", ") || "none";
 
   const rows = FEATURES.map((f) => {
     const v = payload.features[f.key], test = FLAG[f.key];
@@ -81,15 +82,16 @@ export function renderResults({ payload, thresholds: T, teamView = true, onShare
     h("summary", {}, h("span", { class: "lx-eyebrow" }, "Team view"), h("span", { class: "lx-muted lx-small" }, "Demo thresholds, not validated")),
     h("div", { class: "lx-team-grid" },
       h("div", { class: "lx-team-card" },
-        h("span", { class: "lx-eyebrow" }, "Profile"),
-        h("p", { class: "lx-profile" }, PROFILE_LABELS[profile] || profile),
-        h("p", { class: "lx-muted lx-small" }, profileSource === "model" ? "From the ML model." : model ? "From the rules (model not confident)." : "From the rules (no model loaded)."),
-        h("p", { class: "lx-small" }, h("b", {}, "Rules say: "), PROFILE_LABELS[rules.profile], " · ", rules.decision)),
-      model ? h("div", { class: "lx-team-card" },
-        h("span", { class: "lx-eyebrow" }, "ML model"),
+        h("span", { class: "lx-eyebrow" }, "Lesson version"),
+        h("p", { class: "lx-profile" }, VERSION_LABELS[version]),
+        h("p", { class: "lx-muted lx-small" }, "Skills flagged: ", skillList(skills), ". Writing and calculation have no screening task yet."),
+        h("p", { class: "lx-small" }, h("b", {}, "Rules say: "), skillList(rules.skills), " · ", rules.decision)),
+      h("div", { class: "lx-team-card" },
+        h("span", { class: "lx-eyebrow" }, "Skill signals"),
         bars,
-        h("p", { class: "lx-muted lx-small" }, `Risk ${Math.round(model.risk * 100)}%. Trained on ${model.trainedOn} data, so these numbers are not real accuracy.`))
-        : h("div", { class: "lx-team-card" }, h("span", { class: "lx-eyebrow" }, "ML model"), h("p", { class: "lx-muted" }, "No model loaded. Rules only."))),
+        h("p", { class: "lx-muted lx-small" }, model
+          ? `Model reading signal ${Math.round(model.risk * 100)}%. Trained on ${model.trainedOn} data, so these numbers are not real accuracy.`
+          : "No model loaded. Rules only."))),
     h("div", { class: "lx-table-wrap" }, h("table", { class: "lx-table" },
       h("thead", {}, h("tr", {}, h("th", {}, "Feature (ML input)"), h("th", {}, "Value"), h("th", {}, "Rule"))),
       h("tbody", {}, rows))),

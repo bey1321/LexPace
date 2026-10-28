@@ -22,7 +22,6 @@ export default function Tools() {
       <div className="tools-grid">
         <div className="tool-card"><Icon name="rocket" size={46} /><span>Application Authorization</span></div>
         <div className="tool-card"><StudiosityMark /><span>Studiosity - Fast feedback on your assignment</span></div>
-        <Link className="tool-card is-link" to="/tools/screening"><LexPaceMark icon="pulse" /><span>LexPace Screening</span></Link>
         <Link className="tool-card is-link" to="/tools/training"><LexPaceMark icon="book" /><span>LexPace Training</span></Link>
       </div>
     </>

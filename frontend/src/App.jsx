@@ -30,7 +30,8 @@ export default function App() {
         <Route path="messages" element={<EmptyPage title="Messages" icon="mail" text="No messages yet." />} />
         <Route path="grades" element={<EmptyPage title="Grades" icon="grades" text="No grades have been posted yet." />} />
         <Route path="tools" element={<Tools />} />
-        <Route path="tools/screening" element={<ToolFrame title="LexPace Screening" src="/lexpace/screening/" />} />
+        {/* The LexPace check now lives in the course's LexPace tab */}
+        <Route path="tools/screening" element={<Navigate to="/courses/ca/lexpace/screening" replace />} />
         <Route path="tools/training" element={<ToolFrame title="LexPace Training" src="/lexpace/training/dev/login?userId=2023006229&course=ca" />} />
         <Route path="signout" element={<EmptyPage title="Signed out" icon="signout" text="This is a demo, so there is nothing to sign out of. Pick any item on the left to continue." />} />
       </Route>

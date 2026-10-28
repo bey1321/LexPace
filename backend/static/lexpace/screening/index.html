@@ -15,12 +15,12 @@
 <script type="module">
   import { createJourney } from "./src/lexpace-games.js";
 
-  // LexPace integration: hand the screening profile to the Blackboard shell and the adapted lecture
-  const LX_PROFILE_IDS = { none: "base", phonological: "phon", surface: "surf", rapid_naming: "rapid", double_deficit: "double", mixed: "mixed" };
+  // LexPace integration: hand the chosen lesson version (base|read|write|calc) and the skill flags
+  // to the Blackboard shell and the adapted lecture. No condition label is sent or stored.
   window.lexpaceHandOff = (payload) => {
-    const id = LX_PROFILE_IDS[payload.result.profile] || "base";
-    try { localStorage.setItem("pl2-prof", JSON.stringify(id)); } catch {}
-    fetch("/api/lexpace/profile", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ profile: id, source: "screening" }) }).catch(() => {});
+    const { version = "base", skills } = payload.result;
+    try { localStorage.setItem("pl2-prof", JSON.stringify(version)); } catch {}
+    fetch("/api/lexpace/profile", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ version, skills, source: "screening" }) }).catch(() => {});
     setTimeout(() => {
       const results = document.querySelector("#journey .lx-results");
       if (!results || results.querySelector(".lx-handoff")) return;

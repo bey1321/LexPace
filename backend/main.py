@@ -1,6 +1,7 @@
 """LexPace in Blackboard: demo backend.
 
 - /api/...                 small JSON API backed by data/demo.json
+- /api/screening/...       adaptive EN/AR screening (LLM item generation, evaluation, features, classifier)
 - /lexpace/...             screening + adaptation, served as static files (copies of the originals)
 - /lexpace/training/...    reverse proxy to the training app's own Node server
 - /api/rap, /rap, /dev/login, /internal/rap
@@ -21,20 +22,23 @@ from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Resp
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from screening.router import create_router as create_screening_router
+
 HERE = Path(__file__).resolve().parent
 DATA_FILE = HERE / "data" / "demo.json"
 LEXPACE_DIR = HERE / "static" / "lexpace"
 DIST_DIR = HERE.parent / "frontend" / "dist"
 TRAINING_URL = os.environ.get("TRAINING_URL", "http://127.0.0.1:3000")
 
-PROFILES = {
+# Lesson versions of adaptation.html (its localStorage key "pl2-prof" uses the same ids).
+# Only skill flags and the chosen version are stored, never a condition label.
+VERSIONS = {
     "base": "Base lesson",
-    "phon": "Phonological",
-    "surf": "Surface",
-    "rapid": "Rapid naming",
-    "double": "Double deficit",
-    "mixed": "Mixed",
+    "read": "Reading support",
+    "write": "Writing support",
+    "calc": "Calculation support",
 }
+VersionId = Literal["base", "read", "write", "calc"]
 
 app = FastAPI(title="LexPace in Blackboard (demo)")
 _lock = threading.Lock()
@@ -76,33 +80,68 @@ def materials():
     return load_data()["materials"]
 
 
-def profile_view(p: Optional[dict]) -> dict:
-    if not p:
-        return {"profile": None, "label": None, "source": None, "updatedAt": None}
-    return {**p, "label": PROFILES[p["profile"]]}
+def support_view(s: Optional[dict]) -> dict:
+    if not s or s.get("version") not in VERSIONS:
+        return {"version": None, "label": None, "skills": None, "source": None, "updatedAt": None}
+    return {**s, "label": VERSIONS[s["version"]]}
 
 
 @app.get("/api/lexpace/profile")
 def get_profile():
-    return profile_view(load_data().get("lexpaceProfile"))
+    return support_view(load_data().get("lexpaceSupport"))
 
 
-class ProfileIn(BaseModel):
-    profile: Optional[Literal["base", "phon", "surf", "rapid", "double", "mixed"]]
+class Skills(BaseModel):
+    reading: bool = False
+    writing: bool = False
+    math: bool = False
+
+
+class SupportIn(BaseModel):
+    version: Optional[VersionId]
+    skills: Optional[Skills] = None  # sent by the screening; a manual pick has no flags
     source: str = "manual"
 
 
 @app.post("/api/lexpace/profile")
-def set_profile(body: ProfileIn):
+def set_profile(body: SupportIn):
     with _lock:
         data = load_data()
-        data["lexpaceProfile"] = None if body.profile is None else {
-            "profile": body.profile,
+        data["lexpaceSupport"] = None if body.version is None else {
+            "version": body.version,
+            "skills": body.skills.model_dump() if body.skills else None,
             "source": body.source,
             "updatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         }
+        data.pop("lexpaceProfile", None)  # old five-profile key
         save_data(data)
-    return profile_view(data["lexpaceProfile"])
+    return support_view(data["lexpaceSupport"])
+
+
+# ---------------------------------------------------------------- adaptive screening (EN/AR games)
+
+VERSION_FOR_LABEL = {"reading": "read", "writing": "write", "math": "calc"}
+
+
+def save_screening_result(classification: dict) -> None:
+    """Trained model outputs -> skill flags + lesson version.
+    One positive output picks its version; several pick the highest probability; none -> base.
+    Without model outputs the student gets the base lesson (marked pending), unless they already
+    have a version, which is kept.
+    TODO(stacking): combine supports once the lecture page can show more than one."""
+    if classification.get("status") != "ok":
+        if get_profile()["version"] is None:
+            set_profile(SupportIn(version="base", source="screening_pending"))
+        return
+    outputs = classification.get("outputs") or {}
+    skills = {label: bool(outputs.get(label, {}).get("positive")) for label in VERSION_FOR_LABEL}
+    positive = [l for l in VERSION_FOR_LABEL if skills[l]]
+    version = VERSION_FOR_LABEL[max(positive, key=lambda l: outputs[l]["probability"])] if positive else "base"
+    set_profile(SupportIn(version=version, skills=Skills(**{"reading": skills["reading"], "writing": skills["writing"],
+                                                             "math": skills["math"]}), source="screening"))
+
+
+app.include_router(create_screening_router(on_result=save_screening_result))
 
 
 # ---------------------------------------------------------------- training proxy

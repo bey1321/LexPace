@@ -3,7 +3,7 @@ import Icon from "../components/Icon.jsx";
 import { useApi } from "../api.js";
 import HelpButton from "../components/HelpButton.jsx";
 import ContentTab from "./ContentTab.jsx";
-import LexPaceTab, { LectureViewer } from "./LexPaceTab.jsx";
+import LexPaceTab, { LectureViewer, ScreeningView } from "./LexPaceTab.jsx";
 
 const TABS = [
   ["content", "Content"],
@@ -51,6 +51,7 @@ export default function CoursePage() {
       </nav>
       <Routes>
         <Route index element={<Navigate to="content" replace />} />
+        <Route path="lexpace/screening" element={<ScreeningView courseId={courseId} />} />
         <Route path="lexpace/:materialId" element={<LectureViewer courseId={courseId} />} />
         <Route path="*" element={
           <>

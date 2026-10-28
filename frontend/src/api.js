@@ -6,13 +6,14 @@ export async function getJSON(url) {
   return res.json();
 }
 
-export async function saveProfile(profile, source = "manual") {
+// Saves the lesson version (base|read|write|calc, or null to clear). A manual pick has no skill flags.
+export async function saveVersion(version, source = "manual") {
   const res = await fetch("/api/lexpace/profile", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ profile, source }),
+    body: JSON.stringify({ version, source }),
   });
-  if (!res.ok) throw new Error(`save profile: ${res.status}`);
+  if (!res.ok) throw new Error(`save version: ${res.status}`);
   return res.json();
 }
 
@@ -27,16 +28,15 @@ export function useApi(url) {
   return [data, setData];
 }
 
-export const PROFILE_OPTIONS = [
+export const VERSION_OPTIONS = [
   ["base", "Base lesson"],
-  ["phon", "Phonological"],
-  ["surf", "Surface"],
-  ["rapid", "Rapid naming"],
-  ["double", "Double deficit"],
-  ["mixed", "Mixed"],
+  ["read", "Reading support"],
+  ["write", "Writing support"],
+  ["calc", "Calculation support"],
 ];
 
-// adaptation.html reads localStorage "pl2-prof" as JSON (its store wrapper JSON.parses values).
-export function writeLectureProfile(profile) {
-  try { if (profile) localStorage.setItem("pl2-prof", JSON.stringify(profile)); } catch {}
+// adaptation.html reads localStorage "pl2-prof" as JSON (its store wrapper JSON.parses values),
+// so the shell writes the chosen version there before the lecture iframe loads.
+export function writeLectureVersion(version) {
+  try { if (version) localStorage.setItem("pl2-prof", JSON.stringify(version)); } catch {}
 }

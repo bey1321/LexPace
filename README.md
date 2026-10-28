@@ -9,7 +9,7 @@ You need **Python 3.10+** and **Node.js 18+**.
 
 | Windows | Mac / Linux |
 |---|---|
-| `run.bat` | `./run.sh` |
+| `.\run.bat` | `./run.sh` |
 
 Then open **http://localhost:8000**. Press **Ctrl+C** to stop both servers.
 
@@ -18,7 +18,7 @@ Node server (port 3000) and FastAPI (port 8000) together. Once it has run fully,
 it **offline** at the venue with:
 
 ```
-run.bat --skip-install            (or ./run.sh --skip-install)
+.\run.bat --skip-install          (or ./run.sh --skip-install)
 ```
 
 `--skip-build` also reuses the existing `frontend/dist`. Ports can be changed with the `PORT`
@@ -34,18 +34,86 @@ FastAPI (`python -m uvicorn main:app --app-dir backend --port 8000`), then Vite
 1. **Courses** opens on the single Computer Architecture card. Click it.
 2. The course page looks like Blackboard Ultra: content list, folders that open and close, and Course Faculty on the right.
    Open the new **LexPace** tab (last tab, after Achievements).
-3. It says *"Your support profile: Not screened yet"*. Click **Take LexPace Screening**,
-   or, to save time, pick a profile in **Or choose a profile** (for example *Surface*).
-4. Click **Week 6–7: Pipelining (Chapter 4)**. The adapted lecture opens inside the course on that
-   profile. The other weeks are greyed out ("Adaptation coming soon").
-5. In the lecture's left menu, switch between the six profiles (for example *Rapid naming*, then
-   *Double deficit*) and show how the same page adapts.
-6. Sidebar **Tools → LexPace Screening**: the 7-game reading check. When it finishes, it saves the
-   profile and shows **Open my adapted lecture**, which goes straight back to step 4.
+3. On the first visit, **Welcome to LexPace** offers two choices:
+   - **Start the check**: the 7-station adaptive check opens inside the course, in **English** or
+     **العربية** (switch in the bar above it). Questions adapt to accuracy and speed; the maths
+     stations keep their timers. **Go to my materials** in the same bar leaves at any time.
+   - **Skip and go to my materials**: opens the adapted materials directly, on the base lesson.
+4. **My adapted materials** shows the lesson version and where it came from: *check skipped*,
+   *check done, results pending* (until the trained model is connected), or *from your check*.
+   Use **Change version** to pick another one (for example *Reading support*), or **Take the
+   LexPace check** to do the check later.
+5. Click **Week 6–7: Pipelining (Chapter 4)**. The adapted lecture opens inside the course on that
+   version. The other weeks are greyed out ("Adaptation coming soon").
+6. In the lecture's left menu, switch between the four versions (for example *Writing support*, then
+   *Calculation support*) and show how the same page adapts.
+
+To show the welcome screen again, run in the browser console:
+`fetch('/api/lexpace/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"version":null}'})`.
+
+## Lesson versions
+
+LexPace covers the three areas of Specific Learning Disorder with four versions of each lecture.
+Students only ever see the version names, never the name of a condition:
+
+| id | Shown as | Picked when |
+|---|---|---|
+| `base` | Base lesson | no skill flag is on |
+| `read` | Reading support | only the `reading` flag is on |
+| `write` | Writing support | only the `writing` flag is on |
+| `calc` | Calculation support | only the `math` flag is on |
+
+The screening outputs three skill flags, `{ reading, writing, math }`, plus a 0–1 score for each.
+If several flags are on, the version with the strongest score is used (*TODO: combine supports
+once the lecture page can stack them*). Only the flags and the chosen version are stored, never a
+diagnosis label.
+
+- **reading**: on if any reading signal from the seven games is weak (sound decoding, spelling,
+  irregular words, reading speed), or if the ML model's reading signal is at or above `modelRisk`.
+- **writing** and **math**: always `false` for now. The screening has no writing or calculation
+  task yet (*TODO in `src/scoring/rules.js`*).
 7. **Tools → LexPace Training**: accelerated reading training (calibration → session → progress),
    saved by the training app's own server.
 
-To reset the demo to "Not screened yet", choose *Not screened yet* in the picker on the LexPace tab.
+
+## Adaptive screening (English and Arabic)
+
+```
+Student → adaptive games → LLM generates the next item (backend only) → deterministic scoring
+        (LLM scores written expression only) → feature vector → trained ML classifier → results
+```
+
+The games are `backend/static/lexpace/journey/en.html` and `ar.html`, served at
+`/lexpace/journey/`. They are the starter files `lexpace_games_timed_en.html` /
+`lexpace_games_timed_ar.html` (kept unchanged in the root) with the same screens and text. Only
+their data calls changed: items come from, and answers go to, `/api/screening`. The backend lives
+in `backend/screening/`:
+
+| File | What it does |
+|---|---|
+| `generator.py` | Builds the next item at the current difficulty. The LLM returns JSON (question, options, answer, difficulty, skill), which is validated strictly; a repeat or invalid item is retried once, then replaced by a starter item. Number Challenge items are generated in code, so their answers are correct by construction. Math Reasoning items must include an arithmetic expression that the backend evaluates and checks against the marked answer. |
+| `activities.py` | Trial counts and time limits (unchanged: 8 s, 10 s, 25 s, 40 s), plus the adaptive staircase: fast and correct → harder, wrong or timed out → easier. |
+| `evaluation.py` | Deterministic scoring: chosen index vs the server-side key, normalised spelling match with an error pattern (omissions, insertions, substitutions, transpositions), and timeouts. Written expression is the only LLM-scored task, on a fixed 1–4 rubric for grammar, punctuation, organization and clarity, plus error counts. |
+| `features.py` | 70 named features (`lexpace.features/v1`), kept per skill: accuracy, response time, difficulty reached, error patterns, timeouts, writing scores, learning history. There is no single overall score. |
+| `classifier.py` | Interface for the trained model, with three independent multi-label outputs: `reading`, `writing`, `math`. It has **no rules and never uses the LLM**. With no model connected it returns `model_not_connected`. |
+| `bank.py` | The starter items, used as the offline fallback and as format examples. |
+
+**Turning the LLM on:** copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY`. The key is read
+only by the backend. The model is `claude-opus-5-5`, with server-side refusal fallback on (turn it
+off with `LEXPACE_LLM_FALLBACKS=0`). Without a key, the games use the starter items and writing
+is not scored. Everything else works the same. `GET /api/screening/status` shows which mode is
+active and the last LLM error.
+
+**Connecting the trained model:** set `LEXPACE_CLASSIFIER_MODEL` to a JSON export (multi-label
+logistic format, documented in `classifier.py`), or set `LEXPACE_CLASSIFIER=module:factory` for
+any Python model, such as scikit-learn. When it returns outputs, the student's lesson version is
+saved automatically (`read` / `write` / `calc`, or `base`).
+
+**Saved data:** each completed session (trials, writing text, features, classifier output) is
+written to `backend/data/screening_sessions/` (git-ignored) as training data for the model.
+
+**Tests:** `pip install pytest pytest-asyncio`, then `python -m pytest` (in the repo root) runs 33 tests on validation, scoring, features,
+the classifier interface and a full EN and AR session over HTTP. The LLM is faked in the tests.
 
 ## Folder structure
 
@@ -57,9 +125,12 @@ frontend/                   React + Vite + React Router: the Blackboard shell on
   src/pages/                Profile, Courses, Tools, ToolFrame, CoursePage, ContentTab, LexPaceTab
 backend/
   main.py                   FastAPI: API, static LexPace parts, training proxy, SPA fallback
-  data/demo.json            all demo data + the saved support profile
+  screening/                adaptive EN/AR screening pipeline (see above)
+  tests/                    pytest suite for the screening pipeline
+  data/demo.json            all demo data + the saved lesson version (lexpaceSupport)
   static/lexpace/           copies of the LexPace static parts, served at /lexpace/
-    screening/              copy of /screening (structure intact)
+    journey/                EN + AR adaptive games (en.html, ar.html, journey-api.js)
+    screening/              copy of /screening (older 7-game version, no longer linked from Tools)
     adaptation.html         copy of /adaptation.html
     bb-overrides/           colour-only override sheets (screening, adaptation, training)
 screening/ adaptation.html  untouched originals (reference)
@@ -75,8 +146,14 @@ screenshots/                the Blackboard pages the shell copies
 | GET | `/api/courses` | the one course (Computer Architecture) |
 | GET | `/api/courses/ca/content` | the course content list and folders |
 | GET | `/api/lexpace/materials` | adapted materials (Week 6–7 available, others coming soon) |
-| GET | `/api/lexpace/profile` | `{profile, label, source, updatedAt}`, `profile` null if not screened |
-| POST | `/api/lexpace/profile` | body `{"profile": "base\|phon\|surf\|rapid\|double\|mixed" or null, "source": "..."}` |
+| GET | `/api/lexpace/profile` | `{version, label, skills, source, updatedAt}`, `version` null if not screened |
+| POST | `/api/lexpace/profile` | body `{"version": "base\|read\|write\|calc" or null, "skills": {"reading": bool, "writing": bool, "math": bool}, "source": "..."}`. `skills` is optional (a manual pick has none) |
+
+| GET | `/api/screening/status` | LLM on/off, model, last LLM error, classifier, feature names |
+| POST | `/api/screening/sessions` | body `{"language": "en"\|"ar", "context": {...}}` → `session_id`, trial plan |
+| POST | `/api/screening/sessions/{id}/items` | body `{"activity": "lexical"\|"sound"\|"spelling"\|"writing"\|"comprehension"\|"number"\|"reasoning"}` → next item (no answer key) |
+| POST | `/api/screening/sessions/{id}/answers` | body `{item_id, response, latency_ms, timeout, question_index?, audio_plays?, lookbacks?}` → `{correct, timeout}` |
+| POST | `/api/screening/sessions/{id}/complete` | body `{history, passage_reading_ms}` → features + classifier output |
 
 Other routes on the same origin:
 - `/lexpace/screening/` and `/lexpace/adaptation.html`: static files.
@@ -90,19 +167,23 @@ All three keep their content and behaviour. The only changes:
 
 - **Screening** (`backend/static/lexpace/screening/index.html`, marked `LexPace integration`):
   - Two `<link>` tags add the Blackboard colours.
-  - A small `onComplete` hook maps the result to a profile id and stores it in two places:
-    `POST /api/lexpace/profile` and localStorage `pl2-prof`. The mapping is
-    `none→base`, `phonological→phon`, `surface→surf`, `rapid_naming→rapid`,
-    `double_deficit→double`, `mixed→mixed`.
+  - A small `onComplete` hook takes the chosen version and skill flags from the result and stores
+    them in two places: `POST /api/lexpace/profile` and localStorage `pl2-prof`.
   - The hook also adds an **Open my adapted lecture** button above the results.
-- **Adaptation** (`backend/static/lexpace/adaptation.html`): three lines that add the colour
-  override, right after its main `<style>` block. Nothing else changed (checked with `cmp`).
+  - The scoring (`src/scoring/rules.js`, `decide.js`) and the team view (`src/views/results.js`)
+    output skill flags and a version instead of profiles. The root `screening/` copy is kept in sync.
+    Only `index.html` differs between the two copies. The app loads the copy in `backend/static/lexpace/screening/`.
+  - The ML model file (`model/lexpace_model.json`) is unchanged. It was trained on the old reading
+    profiles, so only its overall reading signal is used. Its per-class output is never shown or stored.
+- **Adaptation** (`backend/static/lexpace/adaptation.html`): unchanged, and identical to the root
+  copy. The current version has no Blackboard colour override, so it shows its own colours.
 - **Training**: no files changed. The FastAPI proxy injects the colour override `<link>` into its
   HTML responses. Its `data/db.json` loads and saves through the proxy.
 
-The shell writes the saved profile into localStorage `pl2-prof` before it opens the lecture, so the
-lecture opens on that profile. The lecture's store reads values with `JSON.parse`, so the value is
-written JSON-encoded (`"surf"`).
+The shell writes the saved version into localStorage `pl2-prof` before it opens the lecture, so the
+lecture opens on that version. The shell and the lecture share one origin, so no change to
+adaptation.html is needed. The lecture's store reads values with `JSON.parse`, so the value is
+written JSON-encoded (`"read"`). The lecture's own menu still lets the student switch versions.
 
 ## Theme
 
@@ -139,7 +220,7 @@ No UI library, and no CDN in the shell.
 - The colour overrides apply to light mode only. If the computer is in dark mode, screening and
   the lecture keep their own dark palettes (their dark rules have higher specificity). Use light
   mode for the demo.
-- The six profile colours inside the lecture are kept, because they tell the profiles apart.
+- The version colours inside the lecture are its own and are kept.
 - The training app has no API keys (`config.md` only lists `PORT` and optional LTI settings),
   so no `.env` was needed.
 
@@ -147,11 +228,14 @@ No UI library, and no CDN in the shell.
 
 - **Offline fonts:** screening and adaptation load *Lexend* / *Atkinson Hyperlegible* / *IBM Plex
   Mono* from Google Fonts (CDN). Offline, they fall back to system fonts. Everything still works,
-  but the dyslexia-friendly fonts won't show. To fix, download the fonts into the LexPace folders.
-- **Training profile sync:** the screening profile isn't passed into the training app.
-  Its `dyslexiaProfile` stays `unprofiled`, because it has no endpoint to set it. Calibration
-  and sessions work anyway.
-- **Profile picker:** kept on the LexPace tab even though the screening hand-off works. The
-  screening takes about 10 minutes, so judges can switch profiles without it.
+  but the reading-friendly fonts won't show. To fix, download the fonts into the LexPace folders.
+- **Training sync:** the screening result isn't passed into the training app. Its internal
+  `dyslexiaProfile` field (Training/LexPace, left unchanged) stays `unprofiled`, because it has
+  no endpoint to set it. Calibration and sessions work anyway. *TODO: rename that field to a skill
+  flag when the training app is updated.*
+- **Version picker:** kept on the LexPace tab even though the screening hand-off works. The
+  screening takes about 10 minutes, so judges can switch versions without it.
+- **Writing and calculation screening:** not built yet. Those flags are always `false` until the
+  screening has a writing task and a calculation task.
 - **Testing:** the end-to-end check ran in Chromium (Playwright) on the single-port build. The
   screening hand-off was tested by calling its hook with a sample result, not by playing all 7 games.

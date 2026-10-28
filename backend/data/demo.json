@@ -16,44 +16,167 @@
   ],
   "content": {
     "ca": [
-      { "id": "c1", "type": "file", "title": "paper_template.docx", "menu": true },
-      { "id": "c2", "type": "document", "title": "Course Project FA2026.pdf" },
-      { "id": "c3", "type": "assignment", "title": "Coursera Certificate Submission Link", "due": "Due date: 10/4/26, 11:59 PM (UTC+4)" },
       {
-        "id": "f1", "type": "folder", "title": "ISA References", "open": false,
+        "id": "c1",
+        "type": "file",
+        "title": "paper_template.docx",
+        "menu": true
+      },
+      {
+        "id": "c2",
+        "type": "document",
+        "title": "Course Project FA2026.pdf"
+      },
+      {
+        "id": "c3",
+        "type": "assignment",
+        "title": "Coursera Certificate Submission Link",
+        "due": "Due date: 10/4/26, 11:59 PM (UTC+4)"
+      },
+      {
+        "id": "f1",
+        "type": "folder",
+        "title": "ISA References",
+        "open": false,
         "children": [
-          { "id": "f1a", "type": "document", "title": "MIPS Reference Data (Green Sheet)", "menu": true },
-          { "id": "f1b", "type": "document", "title": "RISC-V Reference Card", "menu": true }
+          {
+            "id": "f1a",
+            "type": "document",
+            "title": "MIPS Reference Data (Green Sheet)",
+            "menu": true
+          },
+          {
+            "id": "f1b",
+            "type": "document",
+            "title": "RISC-V Reference Card",
+            "menu": true
+          }
         ]
       },
       {
-        "id": "f2", "type": "folder", "title": "Content", "open": true,
+        "id": "f2",
+        "type": "folder",
+        "title": "Content",
+        "open": true,
         "children": [
-          { "id": "f2a", "type": "file", "title": "CENG 335_FA26_Updated.docx" },
-          { "id": "f2b", "type": "document", "title": "Classroom rules", "menu": true },
-          { "id": "f2c", "type": "document", "title": "Week 1", "menu": true },
-          { "id": "f2d", "type": "document", "title": "Week2", "menu": true },
-          { "id": "f2e", "type": "document", "title": "Week 2_3", "menu": true },
-          { "id": "f2f", "type": "document", "title": "MIPS_Opcodes", "menu": true },
-          { "id": "f2g", "type": "image", "title": "MIPS register numbers", "menu": true },
-          { "id": "f2h", "type": "image", "title": "MIPS Instructions Format", "menu": true },
-          { "id": "f2i", "type": "file", "title": "Week_4" },
-          { "id": "f2j", "type": "document", "title": "Week 4_5", "menu": true },
-          { "id": "f2k", "type": "document", "title": "Week5_6", "menu": true },
-          { "id": "f2l", "type": "document", "title": "Week6_7", "menu": true },
-          { "id": "f2m", "type": "document", "title": "Week 8_9", "menu": true },
-          { "id": "f2n", "type": "document", "title": "Week 10", "menu": true }
+          {
+            "id": "f2a",
+            "type": "file",
+            "title": "CENG 335_FA26_Updated.docx"
+          },
+          {
+            "id": "f2b",
+            "type": "document",
+            "title": "Classroom rules",
+            "menu": true
+          },
+          {
+            "id": "f2c",
+            "type": "document",
+            "title": "Week 1",
+            "menu": true
+          },
+          {
+            "id": "f2d",
+            "type": "document",
+            "title": "Week2",
+            "menu": true
+          },
+          {
+            "id": "f2e",
+            "type": "document",
+            "title": "Week 2_3",
+            "menu": true
+          },
+          {
+            "id": "f2f",
+            "type": "document",
+            "title": "MIPS_Opcodes",
+            "menu": true
+          },
+          {
+            "id": "f2g",
+            "type": "image",
+            "title": "MIPS register numbers",
+            "menu": true
+          },
+          {
+            "id": "f2h",
+            "type": "image",
+            "title": "MIPS Instructions Format",
+            "menu": true
+          },
+          {
+            "id": "f2i",
+            "type": "file",
+            "title": "Week_4"
+          },
+          {
+            "id": "f2j",
+            "type": "document",
+            "title": "Week 4_5",
+            "menu": true
+          },
+          {
+            "id": "f2k",
+            "type": "document",
+            "title": "Week5_6",
+            "menu": true
+          },
+          {
+            "id": "f2l",
+            "type": "document",
+            "title": "Week6_7",
+            "menu": true
+          },
+          {
+            "id": "f2m",
+            "type": "document",
+            "title": "Week 8_9",
+            "menu": true
+          },
+          {
+            "id": "f2n",
+            "type": "document",
+            "title": "Week 10",
+            "menu": true
+          }
         ]
       }
     ]
   },
   "materials": [
-    { "id": "w1", "title": "Week 1: Computer Abstractions and Technology (Chapter 1)", "available": false },
-    { "id": "w2-3", "title": "Week 2â€“3: Instructions: Language of the Computer (Chapter 2)", "available": false },
-    { "id": "w4-5", "title": "Week 4â€“5: Arithmetic for Computers (Chapter 3)", "available": false },
-    { "id": "w6-7", "title": "Week 6â€“7: Pipelining (Chapter 4)", "available": true, "url": "/lexpace/adaptation.html" },
-    { "id": "w8-9", "title": "Week 8â€“9: Memory Hierarchy (Chapter 5)", "available": false },
-    { "id": "w10", "title": "Week 10: Parallel Processors (Chapter 6)", "available": false }
+    {
+      "id": "w1",
+      "title": "Week 1: Computer Abstractions and Technology (Chapter 1)",
+      "available": false
+    },
+    {
+      "id": "w2-3",
+      "title": "Week 2–3: Instructions: Language of the Computer (Chapter 2)",
+      "available": false
+    },
+    {
+      "id": "w4-5",
+      "title": "Week 4–5: Arithmetic for Computers (Chapter 3)",
+      "available": false
+    },
+    {
+      "id": "w6-7",
+      "title": "Week 6–7: Pipelining (Chapter 4)",
+      "available": true,
+      "url": "/lexpace/adaptation.html"
+    },
+    {
+      "id": "w8-9",
+      "title": "Week 8–9: Memory Hierarchy (Chapter 5)",
+      "available": false
+    },
+    {
+      "id": "w10",
+      "title": "Week 10: Parallel Processors (Chapter 6)",
+      "available": false
+    }
   ],
-  "lexpaceProfile": null
+  "lexpaceSupport": null
 }

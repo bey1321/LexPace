@@ -27,8 +27,8 @@ export const DEFAULT_CONFIG = {
     spanBwd: 4,        // Number Recall reverse. Below → weak working memory.
     follow: 3,         // Follow Me longest correct. Below → weak.
     readComp: 2,       // Short Read questions right (of 3). At or above → understood.
-    modelRisk: 0.5,    // ML: 1 − P(no profile). At or above → suggest a check.
-    modelProfile: 0.5, // ML: minimum probability to show the model's profile.
+    modelRisk: 0.5,    // ML: reading signal (1 − P(no flag)). At or above → reading flag on, suggest a check.
+    modelProfile: 0.5, // ML: no longer used (the model's per-class output is not shown or stored).
   },
 };
 

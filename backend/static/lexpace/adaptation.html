@@ -191,21 +191,83 @@ body.wg-line #ruler{display:block}
 #panel .seg{display:flex;flex-wrap:wrap;gap:6px}
 #panel .seg button{font-size:15px;padding:6px 10px}
 #panel input[type=range]{width:100%;accent-color:var(--focus);height:26px}
-#panel .note{font-size:15px;color:var(--muted);margin:0}
+#panel .note,#mtools .note{font-size:15px;color:var(--muted);margin:0}
+/* writing support */
+.wtask{border:1px solid var(--rule);border-left:6px solid var(--pc);border-radius:12px;padding:16px 18px;margin:0 0 1.4em;background:var(--paper);display:flex;flex-direction:column;gap:12px}
+.wtask .wt{margin:0;font-weight:600;color:var(--pc);font-size:.85em;letter-spacing:.02em}
+.wtask .wq{margin:0;font-weight:500}
+.wtask textarea{display:block;font-family:var(--f-read);font-size:.92em;line-height:1.6;width:100%;box-sizing:border-box;min-height:5.2em;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink);resize:vertical;letter-spacing:inherit;word-spacing:inherit}
+.wtask textarea:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.wbody{display:flex;flex-direction:column;gap:14px}
+.wpart{display:flex;flex-direction:column;gap:6px}
+.wpart label{font-weight:500;font-size:.92em}
+.wn{display:inline-block;min-width:1.6em;height:1.6em;border-radius:50%;background:var(--pc);color:var(--paper);text-align:center;font-size:.78em;line-height:1.6em;margin-right:8px;font-weight:600}
+.wtools{display:flex;flex-wrap:wrap;gap:6px}
+.wtools button{font-size:15px;padding:5px 11px}
+.wbank{display:flex;flex-wrap:wrap;gap:6px}
+.wbank button{font-size:15px;padding:4px 12px;border-radius:999px;border-color:var(--pc);background:var(--pcf)}
+.wpoints{margin:0;padding-left:1.3em;font-size:.9em;color:var(--ink2)}
+.wmeta{font-size:.82em;color:var(--muted);margin:0}
+.wfix{font-size:.88em;background:var(--hazfill);border-left:4px solid var(--hazard);border-radius:0 8px 8px 0;padding:8px 12px;margin:0;display:flex;flex-direction:column;gap:6px}
+.wfix.ok{background:var(--okfill);border-left-color:var(--ok)}
+.wfix .row button{font-size:14px;padding:3px 10px}
+.wmodel{font-size:.9em;background:var(--brandfill);border-left:4px solid var(--brand);border-radius:0 8px 8px 0;padding:10px 14px;margin:0}
+button.mic{font-size:14px;padding:4px 10px;align-self:flex-start}
+button.mic.on{background:var(--hazfill);border-color:var(--hazard);color:var(--hazard)}
+/* calculation support */
+.known{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:10px 14px;margin:0 0 6px}
+.known p{margin:0 0 4px;font-weight:600;font-size:.9em}
+.known ul{margin:0;padding-left:1.2em;font-size:.92em}
+.unitnote{font-size:.85em;color:var(--ink2);margin:6px 0 0}
+.calc .step{border-top:1px dashed var(--rule);padding-top:8px;margin-top:6px}
+.calc .step:first-child{border-top:none;margin-top:0}
+.sanity{background:var(--okfill);border-left:4px solid var(--ok);border-radius:0 8px 8px 0;padding:8px 12px;margin:10px 0 0;font-size:.92em}
+.picture{margin:4px 0 8px;display:flex;flex-direction:column;gap:6px}
+.picture .pl{font-weight:600;font-size:.88em;margin:0}
+.gantt{overflow-x:auto}
+.gantt table{border-collapse:separate;border-spacing:3px;font-size:.68em;font-family:var(--f-calc);letter-spacing:0;word-spacing:0}
+.gantt th{font-weight:500;color:var(--muted);padding:0 2px;text-align:center;min-width:2.6em}
+.gantt th.rl{text-align:left;color:var(--ink);white-space:nowrap}
+.gantt td{min-width:2.6em;height:2em;border-radius:4px;text-align:center}
+.gantt td.on{background:var(--pcf);border:1.5px solid var(--pc);color:var(--pc);font-weight:600}
+.tally{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.tally i,.tlegend i{display:inline-block;width:22px;height:22px;border-radius:4px;border:1.5px solid var(--pc);background:var(--pcf)}
+.tally i.f,.tlegend i.f{border-color:var(--ink2);background:var(--calcbg)}
+.tally i.x,.tlegend i.x{border:1.5px dashed var(--hazard);background:var(--hazfill)}
+.tlegend{display:flex;flex-wrap:wrap;gap:14px;font-size:.82em;color:var(--ink2)}
+.tlegend span{display:inline-flex;align-items:center;gap:6px}
+.tlegend i{width:14px;height:14px}
+#mtools{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:84px;width:min(400px,calc(100% - 32px));max-height:calc(100vh - 160px);overflow:auto;background:var(--paper);border:1px solid var(--rule);border-radius:14px;box-shadow:0 10px 32px rgba(0,0,0,.28);padding:16px 18px 18px;z-index:36;display:flex;flex-direction:column;gap:12px;font-size:17px;line-height:1.5;word-spacing:0;letter-spacing:0;font-family:var(--f-body)}
+#mtools h3{margin:0;font-size:19px}
+.fcard{display:flex;flex-direction:column;gap:12px}
+.fitem{background:var(--paper);border:1px solid var(--rule);border-left:5px solid var(--pc);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.fh{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;line-height:1.3}
+.fic{flex:none;width:32px;height:32px;border-radius:9px;background:var(--pcf);display:grid;place-items:center;font-size:17px}
+.fx{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:16px;line-height:1.4}
+.fx .v{background:var(--pcf);border:1px solid var(--pc);border-radius:7px;padding:2px 9px;font-weight:500;color:var(--ink)}
+.fx .op{font-family:var(--f-calc);font-weight:700;font-size:18px;color:var(--pc);min-width:.7em;text-align:center}
+.fx .n{font-family:var(--f-calc);font-weight:600}
+.fe{display:flex;align-items:baseline;gap:8px;background:var(--calcbg);border-radius:8px;padding:7px 10px;font-size:15px}
+.fe span{color:var(--muted);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;flex:none}
+.fe code{font-family:var(--f-calc);color:var(--ink2)}
+.fe code b{color:var(--pc)}
+.fu{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.fu li{background:var(--calcbg);border-radius:8px;padding:7px 10px;font-size:15px;font-family:var(--f-calc)}
+.cpad{display:flex;gap:6px}
+.cpad input{flex:1;min-width:0;font-family:var(--f-calc);font-size:17px;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink)}
+.cpad input:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.cres{font-family:var(--f-calc);font-size:18px;font-weight:600;color:var(--pc);margin:0;min-height:1.5em}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}#side,.wrap,.spot,.bar{transition:none}}
 </style>
-<!-- LexPace integration: Blackboard colour override -->
-<link rel="stylesheet" href="/theme.css">
-<link rel="stylesheet" href="bb-overrides/adaptation.css">
 
 <header class="top" id="top">
   <button type="button" id="menu" aria-controls="side" aria-expanded="false">☰ Menu</button>
   <span class="name">Pipelining</span>
-  <select id="psel" aria-label="Student profile"></select>
+  <select id="psel" aria-label="Support version"></select>
   <div class="prog" aria-hidden="true"><i id="progi"></i></div>
 </header>
-<nav id="side" aria-label="Profile and contents">
-  <h2>Student profile</h2><div class="ptabs" id="ptabs" role="tablist" aria-label="Student profile"></div>
+<nav id="side" aria-label="Support version and contents">
+  <h2>Support version</h2><div class="ptabs" id="ptabs" role="tablist" aria-label="Support version"></div>
   <h2 class="sp">Contents</h2><ol id="toc"></ol>
 </nav>
 <div id="scrim"></div>
@@ -221,6 +283,7 @@ body.wg-line #ruler{display:block}
 </article></div>
 <div id="ruler" aria-hidden="true"></div>
 <div id="panel" role="dialog" aria-label="Reading settings" hidden></div>
+<div id="mtools" role="dialog" aria-label="Formula card and calculator" hidden></div>
 <div id="dock"></div>
 
 <script>
@@ -254,12 +317,30 @@ const SECS=[
        [[188,82,1110,372],'Top, no pipelining: each load waits until the previous one is completely finished. Four loads take from 6 PM to 2 AM, which is 8 hours.'],
        [[188,388,1110,712],'Bottom, pipelining: load B starts washing as soon as load A moves to the dryer. All four are done by 9:30 PM, which is 3.5 hours.']]}},
   {p:['Without pipelining, a load only starts when the one before it is completely finished.','With pipelining, load B goes into the washer as soon as load A moves to the dryer.']},
-  {calc:{t:'How long do the four loads take?',steps:[
+  {calc:{t:'How long do the four loads take?',
+    m:{known:['4 loads of laundry: A, B, C and D','Each load has 4 steps: wash, dry, fold, put away','Each step takes 30 minutes'],
+     unit:'Units: 60 minutes = 1 hour, so 30 minutes = 0.5 hours.',
+     vis:{label:'Picture it, with pipelining: each square is one 30-minute step (W wash, D dry, F fold, P put away). Count the columns.',
+      gantt:{cols:7,rows:[['Load A',0,4,'WDFP'],['Load B',1,4,'WDFP'],['Load C',2,4,'WDFP'],['Load D',3,4,'WDFP']]},
+      note:'With pipelining: 7 columns × 30 min = 210 min = 3.5 hours. Without pipelining, all 16 squares sit in one long row: 16 × 30 min = 8 hours.'},
+     steps:[['Find the time for one load: 4 steps of 30 minutes each.','4 × 30 min = 120 min = 2 hours'],
+      ['Without pipelining, the 4 loads run one after another.','4 loads × 2 hours = 8 hours',1],
+      ['With pipelining, the first load still needs its full 2 hours.','Load A is done after 2 hours'],
+      ['Each of the other 3 loads finishes one step, 30 minutes, after the one before.','3 × 30 min = 90 min = 1.5 hours'],
+      ['Add the two parts.','2 hours + 1.5 hours = 3.5 hours',1]],
+     check:'With pipelining it should take less than 8 hours, but never less than one load, 2 hours. 3.5 hours is in between. ✔'},
+    steps:[
     ['Without pipelining, the loads run one after another.','4 loads × 2 hours = 8 hours'],
     ['With pipelining, the first load takes 2 hours.','4 steps × 30 min = 2 hours'],
     ['Each next load finishes one step, 30 minutes, later.','2 h + 30 min + 30 min + 30 min = 3.5 hours',1]]}},
   {p:['A processor pipeline works the same way.','It has several stages, and they all work at the same time.','This is possible because each stage has its own separate hardware, just like the washer and the dryer.']},
   {p:['One load of laundry still takes 2 hours from start to finish.','Pipelining does not shorten one task, but it shortens the time to finish all of them.']},
+  {write:{id:'w1',q:'In your own words, explain why pipelining makes the four loads finish sooner, even though one load still takes 2 hours.',
+    parts:[['What happens to load B while load A is in the dryer?','While load A is in the dryer, load B '],
+     ['What changes for the whole batch?','Because the loads overlap, '],
+     ['What stays the same?','One load still takes 2 hours, because ']],
+    bank:['overlap','at the same time','washer','dryer','whole batch','finish sooner'],
+    model:'While load A is in the dryer, load B is already in the washer, so the steps overlap. Because the loads overlap, all four loads are finished by 9:30 PM, after 3.5 hours instead of 8. One load still takes 2 hours, because it still has to go through all four steps.'}},
   {check:{q:'With pipelining, what gets faster?',o:[['a','Each single task'],['b','Finishing all of the tasks']],ok:'b',fb:'One load still takes 2 hours. Overlapping makes the whole batch finish sooner.'}}]},
 
 {id:'stages',toc:'Pipelined datapath and control',title:'Pipelined datapath and control',
@@ -314,20 +395,43 @@ const SECS=[
    hs:[[[136,72,1118,400],'Single-cycle: each lw takes 800 ps, and the next lw starts only after the previous one ends.'],
        [[136,425,1118,736],'Pipelined: a new lw starts every 200 ps, while the earlier ones are still running.'],
        [[470,684,905,734],'Every stage gets 200 ps, even the register stages that need only 100 ps. That is why some boxes have gaps.']]}},
-  {calc:{t:'Time for three lw instructions',steps:[
+  {calc:{t:'Time for three lw instructions',
+    m:{known:['3 lw instructions','Single-cycle: each lw takes 800 ps','Pipeline: 5 stages, and each stage gets 200 ps'],
+     unit:'Units: ps means picosecond, one trillionth of a second. Every number here is already in ps, so nothing needs converting.',
+     vis:{label:'Picture it, pipelined: each square is one 200 ps stage. Count the columns.',
+      gantt:{cols:7,rows:[['lw 1',0,5,['IF','ID','EX','MEM','WB']],['lw 2',1,5,['IF','ID','EX','MEM','WB']],['lw 3',2,5,['IF','ID','EX','MEM','WB']]]},
+      note:'7 columns × 200 ps = 1400 ps.'},
+     steps:[['Single-cycle: each lw takes 800 ps, and they run one after another.','3 × 800 ps = 2400 ps',1],
+      ['Pipelined: the first lw goes through all 5 stages.','5 × 200 ps = 1000 ps'],
+      ['The other 2 lw instructions each finish one stage, 200 ps, later.','2 × 200 ps = 400 ps'],
+      ['Add the two parts.','1000 ps + 400 ps = 1400 ps',1]],
+     check:'The pipeline, 1400 ps, should beat single-cycle, 2400 ps. It does. ✔'},
+    steps:[
     ['Single-cycle: the three run one after another.','3 × 800 ps = 2400 ps',1],
     ['Pipelined: the first lw passes through all 5 stages.','5 × 200 ps = 1000 ps'],
     ['Each next lw finishes one stage, 200 ps, later.','1000 ps + 200 ps + 200 ps = 1400 ps',1]]}},
   {p:['Notice that one lw on its own now takes 1000 ps, which is longer than 800 ps.','The pipeline wins because the instructions overlap, not because each one gets faster.']},
   {h3:'The speedup formula'},
   {p:['If every stage took exactly the same time, the time between instructions would be divided by the number of stages.']},
-  {calc:{steps:[['','Time between instructions (pipelined) =<span class="frac"><span>Time between instructions (not pipelined)</span><span>Number of stages</span></span>']]}},
+  {calc:{m:{lead:'In words: take the time between instructions without a pipeline, and divide it by the number of stages.'},steps:[['','Time between instructions (pipelined) =<span class="frac"><span>Time between instructions (not pipelined)</span><span>Number of stages</span></span>']]}},
   {p:['So in the ideal case, the speedup equals the number of stages.','Our stages are not equal, because the slowest one sets the clock.']},
-  {calc:{t:'Speedup for our MIPS pipeline',steps:[
+  {calc:{t:'Speedup for our MIPS pipeline',
+    m:{known:['Single-cycle time per instruction: 800 ps','Number of stages: 5','Slowest stage: 200 ps'],
+     steps:[['Ideal case: share the 800 ps equally over the 5 stages.','800 ps ÷ 5 = 160 ps per instruction'],
+      ['Real case: the slowest stage sets the clock, so a new instruction starts every 200 ps.','time between instructions = 200 ps'],
+      ['Speedup means: old time ÷ new time.','800 ps ÷ 200 ps = 4 times faster',1]],
+     check:'A speedup must be more than 1, and it cannot be more than the number of stages, 5. 4 fits. ✔'},
+    steps:[
     ['Ideal case, 5 equal stages:','800 ps ÷ 5 = 160 ps per instruction'],
     ['Real case, the slowest stage takes 200 ps:','800 ps ÷ 200 ps = 4 times faster',1]]}},
   {p:['With a 5-stage pipeline, 20 instructions take about 5 times as long as 1 instruction.','Without a pipeline, 20 instructions take 20 times as long as 1.','Try different numbers of instructions below.']},
   {widget:'speed'},
+  {write:{id:'w2',q:'One lw takes 1000 ps in the pipeline but only 800 ps in the single-cycle design. Explain why three lw instructions still finish sooner in the pipeline.',
+    parts:[['Why is one lw slower in the pipeline?','Every stage gets a 200 ps clock cycle, so one lw needs '],
+     ['Why do three lw instructions finish sooner?','The instructions overlap, so '],
+     ['What does pipelining improve, and what does it not improve?','So pipelining improves ']],
+    bank:['clock cycle','stage','200 ps','overlap','throughput','single instruction'],
+    model:'Every stage gets a 200 ps clock cycle, so one lw needs 5 × 200 ps = 1000 ps, even though some stages need less time. The instructions overlap, so a new lw finishes every 200 ps, and three take only 1400 ps instead of 2400 ps. So pipelining improves throughput, the number of instructions finished per unit of time, but it does not make a single instruction faster.'}},
   {check:{q:'What sets the clock cycle in a pipeline?',o:[['a','The slowest instruction'],['b','The slowest stage'],['c','The number of instructions']],ok:'b',fb:'Every stage must finish within one clock cycle, so the slowest stage, 200 ps, sets it.'}}]},
 
 {id:'isa',toc:'Designing instruction sets',title:'Designing instruction sets for pipelining',
@@ -359,6 +463,12 @@ const SECS=[
        [[795,380,845,430],'At the end of the EX stage of add, the sum for $s0 already exists. That is the blue dot.'],
        [[805,400,870,580],'Forwarding carries it down the blue line to the input of the EX stage of sub, just in time.'],
        [[1030,368,1112,452],'Without forwarding, sub would have to wait until this WB stage, when add finally writes $s0.']]}},
+  {write:{id:'w3',q:'Explain how forwarding removes the wait between add and sub.',
+    parts:[['When does the sum for $s0 exist?','The sum for $s0 already exists at the end of '],
+     ['What does forwarding do with it?','Forwarding passes the sum '],
+     ['Why does sub not have to wait?','sub does not have to wait, because ']],
+    bank:['forwarding','EX stage','ALU','register','WB stage','data hazard'],
+    model:'The sum for $s0 already exists at the end of the EX stage of add, as soon as its ALU finishes. Forwarding passes the sum straight from the ALU output of add to the ALU input of sub, using extra hardware. sub does not have to wait, because it gets $s0 just in time for its own EX stage, instead of waiting until add writes the register in WB.'}},
   {check:{q:'What does forwarding remove?',o:[['a','The waiting cycles'],['b','The EX stage'],['c','The need for registers']],ok:'a',fb:'The stages stay the same. Only the waiting goes away.'}}]},
 
 {id:'loaduse',toc:'Load-use data hazard',title:'Data hazards: the load-use data hazard',
@@ -383,7 +493,17 @@ const SECS=[
   {pair:['<div class="cl">Original code</div><pre>lw  $t1, 0($t0)   <span class="c"># load b</span>\nlw  <span class="st">$t2</span>, 4($t0)   <span class="c"># load e</span>\n<span class="st">    stall</span>\nadd $t3, $t1, <span class="st">$t2</span> <span class="c"># a = b + e</span>\nsw  $t3, 12($t0)  <span class="c"># store a</span>\nlw  <span class="st">$t4</span>, 8($t0)   <span class="c"># load f</span>\n<span class="st">    stall</span>\nadd $t5, $t1, <span class="st">$t4</span> <span class="c"># c = b + f</span>\nsw  $t5, 16($t0)  <span class="c"># store c</span></pre>',
          '<div class="cl">Reordered code</div><pre>lw  $t1, 0($t0)\nlw  $t2, 4($t0)\n<span class="mv">lw  $t4, 8($t0)   ← moved up</span>\nadd $t3, $t1, $t2\nsw  $t3, 12($t0)\nadd $t5, $t1, $t4\nsw  $t5, 16($t0)</pre>']},
   {p:['In the original code, each add uses a value loaded by the lw just before it.','That gives two stalls.','In the reordered code, lw $t4 moves up, so every load has at least one instruction between it and its use.']},
-  {calc:{t:'Counting the clock cycles',steps:[
+  {calc:{t:'Counting the clock cycles',
+    m:{known:['7 instructions in both versions','A 5-stage pipeline','Original code: 2 stalls. Reordered code: no stalls'],
+     vis:{label:'Picture it: one square for each clock cycle of the original code.',
+      tally:[[7,'','one per instruction'],[4,'f','filling the pipeline'],[2,'x','stalls']],
+      note:'Original: 7 + 4 + 2 = 13 squares. Reordered: remove the 2 dashed squares, which leaves 11.'},
+     steps:[['Where does the 4 come from? The first instruction needs 5 cycles, and every other instruction adds 1. So the extra cycles are stages − 1.','5 − 1 = 4 extra cycles'],
+      ['Original: instructions + extra cycles + stalls.','7 + 4 + 2 = 13 clock cycles',1],
+      ['Reordered: the same, but with no stalls.','7 + 4 + 0 = 11 clock cycles',1],
+      ['How much did reordering save?','13 − 11 = 2 clock cycles']],
+     check:'Each stall costs exactly one clock cycle, so removing 2 stalls should save 2 cycles. It does. ✔'},
+    steps:[
     ['Original: 7 instructions, 4 cycles to fill the pipeline, and 2 stalls.','7 + 4 + 2 = 13 clock cycles'],
     ['Reordered: the same 7 instructions and 4 cycles, with no stalls.','7 + 4 + 0 = 11 clock cycles',1]]}},
   {check:{q:'Why does moving lw $t4 up remove the second stall?',o:[['a','add $t5 no longer comes right after the lw that loads $t4'],['b','lw becomes faster'],['c','$t4 is not needed any more']],ok:'a',fb:'Now there are two instructions between loading $t4 and using it, so forwarding is in time.'}}]},
@@ -400,6 +520,12 @@ const SECS=[
    hs:[[[86,70,1090,335],'The branch is not taken, so the guess was right. The next instruction, lw, is fetched just 200 ps after beq, with no delay.'],
        [[86,352,1090,732],'The branch is taken, so the guess was wrong. The pipeline stalls with a bubble, and the or instruction is fetched 400 ps after beq.']]}},
   {p:['Guessing ahead like this is called {branch prediction}.','It only loses time when the guess is wrong.']},
+  {write:{id:'w4',q:'Compare the two solutions for control hazards. Which one usually wastes less time, and why?',
+    parts:[['Solution 1: stall on branch','With stall on branch, the pipeline '],
+     ['Solution 2: predict not taken','With prediction, the pipeline '],
+     ['Which one wastes less time, and why?','Prediction usually wastes less time, because ']],
+    bank:['branch','stall','branch prediction','taken','not taken','bubble'],
+    model:'With stall on branch, the pipeline waits after every branch until it knows the outcome, so it always loses time. With prediction, the pipeline guesses that the branch is not taken and keeps fetching the next instruction. Prediction usually wastes less time, because it only stalls when the guess is wrong, which is when the branch is taken.'}},
   {check:{q:'With “predict not taken”, when do we lose time?',o:[['a','Only when the branch is taken'],['b','On every branch'],['c','Never']],ok:'a',fb:'The guess is wrong only when the branch is taken.'}}]},
 
 {id:'exercise',toc:'Exercise',title:'Exercise',
@@ -420,22 +546,16 @@ const SECS=[
 /* ---------- profiles ---------- */
 const PROF=[
  {id:'base',name:'Base lesson',sub:'What every student sees',col:'#1F7A8C',dcol:'#5EC4B6',f:{},
-  text:'<b>Base lesson.</b> Every student with dyslexia sees this version. Choose a profile from the menu to see how the page adapts.',on:[]},
- {id:'phon',name:'Phonological',sub:'Sound problems',col:'#1d8466',dcol:'#5fd0a8',f:{syl:1,pron:1,plain:1},
-  text:'<b>Phonological profile.</b> Sounding out new words is hard, so new technical terms get extra help.',
-  on:['Syllable breaks on new terms','Tap a term to hear it slowly','Plain meaning beside each new term']},
- {id:'surf',name:'Surface',sub:'Whole-word memory',col:'#6656c9',dcol:'#a99cf5',f:{irr:1,fam:1,bank:1,pron:1},
-  text:'<b>Surface profile.</b> Sounding out works, but the shape of a word is hard to remember, so tricky spellings get extra help.',
-  on:['Tricky letters highlighted','A word list in each section','Word families (forward → forwarding)','Tap a term to see and hear it']},
- {id:'rapid',name:'Rapid naming',sub:'Accurate but slow',col:'#c0561b',dcol:'#f29a5e',f:{before:1,short:1,reader:1},
-  text:'<b>Rapid naming profile.</b> Reading is accurate but slow, so the page cuts reading effort without cutting content.',
-  on:['A short summary before each section','Short lines','Read-aloud with speed control','Resume where you stopped']},
- {id:'double',name:'Double deficit',sub:'Phonological + slow',col:'#b3315c',dcol:'#f07fa4',f:{syl:1,pron:1,plain:1,before:1,short:1,reader:1,auto:1},
-  text:'<b>Double deficit profile.</b> Sounding out is hard and reading is slow, so read-aloud comes first, with sound and pace support.',
-  on:['Read-aloud first, word by word','Syllable breaks and tap-to-hear terms','Plain meanings','Summaries and short lines']},
- {id:'mixed',name:'Mixed',sub:'Phonological + surface',col:'#2766ad',dcol:'#7fb4f0',f:{syl:1,pron:1,irr:1,preview:1,reader:1,auto:1},
-  text:'<b>Mixed profile.</b> Both sounding out and recognising words are hard, so new words are previewed before each section and read-aloud comes first.',
-  on:['Read-aloud first','Syllable breaks and tricky-letter highlights','Words to know before each section','Tap a term to hear it']}];
+  text:'<b>Base lesson.</b> Every student sees this version. It has no extra supports, only the lecture with its narrated slides. Choose a support version from the menu to see how the page adapts. The check-in suggests a version, and any student can switch to any of them.',on:[]},
+ {id:'read',name:'Reading support',sub:'Reading words is slow or effortful',col:'#2766ad',dcol:'#7fb4f0',f:{syl:1,pron:1,plain:1,irr:1,preview:1,reader:1,auto:1},
+  text:'<b>Reading support.</b> Reading words takes extra effort, so the page cuts reading effort without cutting content. New terms are easier to sound out and hear, every section opens with its key words, and the whole lesson can be read aloud.',
+  on:['Read-aloud with word highlighting','Syllable breaks and tricky letters marked','Tap a term to hear it and see its meaning','Key words before each section','Resume where you stopped']},
+ {id:'write',name:'Writing support',sub:'Getting ideas onto the page',col:'#6656c9',dcol:'#a99cf5',f:{write:1},
+  text:'<b>Writing support.</b> Putting ideas into written words is the hard part, so every written answer is broken into guided steps. You get sentence starters, a word bank, voice typing and a spelling check for the technical words. The question being asked does not change.',
+  on:['Guided steps with sentence starters','Answer as bullet points if you prefer','Word bank: tap to insert','Voice typing','Spelling check for technical words','Example answer to compare']},
+ {id:'calc',name:'Calculation support',sub:'Working with numbers',col:'#c0561b',dcol:'#f29a5e',f:{math:1},
+  text:'<b>Calculation support.</b> Working with numbers is the hard part, so every calculation starts with what we know, shows a picture you can count, and goes one step at a time with the units written out. Each one ends with a sanity check. A formula card and a calculator are always one tap away.',
+  on:['What we know, listed first','A picture of every count','One step at a time, with units','Sanity check on every answer','Formula card','Calculator']}];
 
 /* ---------- technical terms ---------- */
 const BASE={
@@ -483,8 +603,8 @@ const DEF={font:'lexend',size:20,lh:1.8,ws:0,ls:0,rate:.92,len:'normal',guide:'o
 const store={get(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
 let SET=Object.assign({},DEF,store.get('pl2-set')||{});
 const RATE=()=>SET.rate;
-function applySet(){const r=document.documentElement.style;r.setProperty('--fs',SET.size+'px');r.setProperty('--lh',SET.lh);r.setProperty('--ws',SET.ws+'em');r.setProperty('--ls',SET.ls+'em');r.setProperty('--f-read',FONTS[SET.font][1]);
-  document.body.classList.toggle('shortlines',SET.len==='short');document.body.classList.toggle('wg-word',SET.guide==='word');document.body.classList.toggle('wg-line',SET.guide==='line');store.set('pl2-set',SET);}
+function applySet(){const S=(CUR&&CUR.id==='base')?DEF:SET;const r=document.documentElement.style;r.setProperty('--fs',S.size+'px');r.setProperty('--lh',S.lh);r.setProperty('--ws',S.ws+'em');r.setProperty('--ls',S.ls+'em');r.setProperty('--f-read',FONTS[S.font][1]);
+  document.body.classList.toggle('shortlines',S.len==='short');document.body.classList.toggle('wg-word',S.guide==='word');document.body.classList.toggle('wg-line',S.guide==='line');store.set('pl2-set',SET);}
 
 /* ---------- speech ---------- */
 const reduceM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -570,14 +690,14 @@ function termsFrag(text,ctx,inGl,block){const frag=document.createDocumentFragme
 function wrapWords(root){const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentNode.closest('.term,.wd,.sd')||!n.nodeValue.trim()?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
   const ns=[];while(tw.nextNode())ns.push(tw.currentNode);
   ns.forEach(n=>{const fr=document.createDocumentFragment();n.nodeValue.split(/(\s+)/).forEach(p=>{if(!p)return;if(/^\s+$/.test(p))fr.appendChild(document.createTextNode(p));else fr.appendChild(el('span','wd',esc(p)));});n.parentNode.replaceChild(fr,n);});}
-function sentence(str,block,ctx){const sp=el('span','s rd');sp.tabIndex=0;
+function sentence(str,block,ctx){const vo=!!CUR.f.reader;const sp=el('span',vo?'s rd':'rd');if(vo)sp.tabIndex=0;
   str.split(/(\{[^}]+\}|\*\*[^*]+\*\*)/).forEach(part=>{if(!part)return;const m=part.match(/^\{(.+)\}$/),bm=part.match(/^\*\*(.+)\*\*$/);
     if(m){const term=m[1].toLowerCase();const b=el('button','gl');b.type='button';b.appendChild(termsFrag(m[1],ctx,true,block));b.title='What does this mean?';
       b.onclick=e=>{e.stopPropagation();const d=el('div','def','<b>'+esc(m[1])+'</b>: '+esc(GL[term]||''));d.dataset.k='g:'+term;placeAfter(block,d);};sp.appendChild(b);}
     else if(bm){const b=el('b');b.appendChild(termsFrag(bm[1],ctx,false,block));sp.appendChild(b);}
     else sp.appendChild(termsFrag(part,ctx,false,block));});
   wrapWords(sp);
-  sp.onclick=()=>readOne(sp);sp.onkeydown=e=>{if(e.key==='Enter'&&e.target===sp){e.preventDefault();readOne(sp);}};return sp;}
+  if(vo){sp.onclick=()=>readOne(sp);sp.onkeydown=e=>{if(e.key==='Enter'&&e.target===sp){e.preventDefault();readOne(sp);}};}return sp;}
 
 /* ---------- profile boxes ---------- */
 const strip=s=>s.replace(/[{}]|\*\*/g,'');
@@ -586,7 +706,7 @@ function termsIn(c){const seen=new Map();secTexts(c).forEach(t=>{(t.match(TRX)||
 const fmtT=s=>s<55?'under a minute':'about '+Math.round(s/60)+' minute'+(Math.round(s/60)>1?'s':'');
 function beforeBox(c,terms){const n=secTexts(c).join(' ').split(/\s+/).length;const b=el('div','prebox');b.appendChild(el('p','pt','In short'));
   const ul=el('ul');
-  if(terms.length)ul.appendChild(el('li','','Words to look out for: '+terms.slice(0,4).map(t=>esc(t.form)).join(', ')+'.'));
+  if(terms.length&&!CUR.f.preview)ul.appendChild(el('li','','Words to look out for: '+terms.slice(0,4).map(t=>esc(t.form)).join(', ')+'.'));
   ul.appendChild(el('li','','Takes '+fmtT(n/110*60)+' to read, or '+fmtT(n/(150*RATE()/.92)*60)+' to listen.'));b.appendChild(ul);return b;}
 function previewBox(terms){if(!terms.length)return null;const b=el('div','prebox');b.appendChild(el('p','pt','Words to know first'));const g=el('div','pv');
   terms.slice(0,5).forEach(t=>{const bt=btn('🔊','',()=>sayTerm(t.info,t.form));bt.setAttribute('aria-label','Hear '+t.form);
@@ -634,7 +754,96 @@ function slideFig(d){const f=el('figure','slide');const wrap=el('div','imgwrap')
 
 /* ---------- blocks ---------- */
 function calcBlock(c){const b=el('div','calc');if(c.t)b.appendChild(el('p','ct',esc(c.t)));
-  c.steps.forEach(([x,eq,res],k)=>{if(x)b.appendChild(el('p','cx',(c.steps.length>1?'<b>Step '+(k+1)+'.</b> ':'')+esc(x)));b.appendChild(el('div','eq'+(res?' res':''),eq));});return b;}
+  if(!CUR.f.math||!c.m){c.steps.forEach(([x,eq,res],k)=>{if(x)b.appendChild(el('p','cx',(c.steps.length>1?'<b>Step '+(k+1)+'.</b> ':'')+esc(x)));b.appendChild(el('div','eq'+(res?' res':''),eq));});return b;}
+  const m=c.m;
+  if(m.lead)b.appendChild(el('p','cx',esc(m.lead)));
+  if(m.known){const k=el('div','known');k.appendChild(el('p','','What we know'));const ul=el('ul');m.known.forEach(x=>ul.appendChild(el('li','',esc(x))));k.appendChild(ul);if(m.unit)k.appendChild(el('p','unitnote',esc(m.unit)));b.appendChild(k);}
+  if(m.vis)b.appendChild(picture(m.vis));
+  const steps=m.steps||c.steps;const holder=el('div');b.appendChild(holder);
+  const san=m.check?el('p','sanity','✅ <b>Sanity check:</b> '+esc(m.check)):null;if(san)b.appendChild(san);
+  const nav=el('div','row');nav.style.marginTop='10px';b.appendChild(nav);
+  let shown=steps.length>1?1:steps.length;
+  const draw=()=>{holder.innerHTML='';steps.slice(0,shown).forEach(([x,eq,res],k)=>{const st=el('div','step');
+      if(x)st.appendChild(el('p','cx',(steps.length>1?'<b>Step '+(k+1)+' of '+steps.length+'.</b> ':'')+esc(x)));st.appendChild(el('div','eq'+(res?' res':''),eq));holder.appendChild(st);});
+    if(san)san.hidden=shown<steps.length;
+    nav.innerHTML='';
+    if(shown<steps.length){nav.appendChild(btn('Next step ▶','prime',()=>{shown++;draw();}));nav.appendChild(btn('Show all steps','',()=>{shown=steps.length;draw();}));}
+    else if(steps.length>1)nav.appendChild(btn('↺ Go through the steps again','',()=>{shown=1;draw();}));
+    nav.hidden=steps.length<2;};
+  draw();return b;}
+function picture(v){const w=el('div','picture');w.appendChild(el('p','pl',esc(v.label)));
+  if(v.gantt){const g=v.gantt;let h='<table><thead><tr><th></th>';for(let c=1;c<=g.cols;c++)h+='<th scope="col">'+c+'</th>';h+='</tr></thead><tbody>';
+    g.rows.forEach(([n,st,l,tag])=>{h+='<tr><th class="rl" scope="row">'+esc(n)+'</th>';for(let c=0;c<g.cols;c++)h+=(c>=st&&c<st+l)?'<td class="on">'+(tag?esc(tag[c-st]||''):'')+'</td>':'<td></td>';h+='</tr>';});
+    w.appendChild(el('div','gantt',h+'</tbody></table>'));}
+  if(v.tally){const t=el('div','tally');t.setAttribute('aria-hidden','true');const lg=el('div','tlegend');
+    v.tally.forEach(([n,cls,lab])=>{for(let i=0;i<n;i++)t.appendChild(el('i',cls));lg.appendChild(el('span','','<i class="'+cls+'"></i>'+n+' '+esc(lab)));});w.append(t,lg);}
+  if(v.note)w.appendChild(el('p','unitnote',esc(v.note)));return w;}
+
+/* ---------- writing task ---------- */
+const SRec=window.SpeechRecognition||window.webkitSpeechRecognition;let REC=null;
+function micBtn(ta,note){const b=btn('🎤 Voice typing','mic');
+  b.onclick=()=>{if(!SRec){note.textContent='Voice typing is not available in this browser. Try Chrome or Edge, or the microphone on your device keyboard.';note.hidden=false;return;}
+    if(REC){try{REC.stop();}catch(e){}return;}
+    try{const r=new SRec();r.lang='en-US';r.interimResults=false;r.continuous=true;REC=r;b.classList.add('on');b.textContent='■ Stop voice typing';
+      r.onresult=e=>{let t='';for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)t+=e.results[i][0].transcript;
+        if(t.trim()){ta.value=ta.value+(ta.value&&!/\s$/.test(ta.value)?' ':'')+t.trim();ta.dispatchEvent(new Event('input'));}};
+      r.onerror=ev=>{note.textContent=ev.error==='not-allowed'?'Voice typing needs permission to use the microphone.':'Voice typing stopped ('+ev.error+').';note.hidden=false;};
+      r.onend=()=>{REC=null;b.classList.remove('on');b.textContent='🎤 Voice typing';};r.start();}
+    catch(e){REC=null;note.textContent='Voice typing could not start here.';note.hidden=false;}};return b;}
+let VOCAB=null;
+function vocab(){if(VOCAB)return VOCAB;VOCAB=new Set();const add=t=>(String(t).toLowerCase().match(/[a-z]+/g)||[]).forEach(w=>VOCAB.add(w));
+  SECS.forEach(c=>{add(c.title);secTexts(c).forEach(add);c.blocks.forEach(b=>{if(b.write){add(b.write.q);add(b.write.model);b.write.bank.forEach(add);b.write.parts.forEach(p=>add(p.join(' ')));}if(b.check){add(b.check.q);add(b.check.fb);b.check.o.forEach(o=>add(o[1]));}});});
+  Object.keys(TM).forEach(add);Object.entries(GL).forEach(([k,v])=>{add(k);add(v);});
+  ['because','which','their','there','where','would','should','could','faster','slower','sooner','later','instead','without','between','while','again','first','second','other','another','every','after','before','still','until','times','loads','takes','needs','results','values','wrong','right','guess','guesses','correct','exactly'].forEach(add);return VOCAB;}
+function lev(a,b){const d=[];for(let i=0;i<=a.length;i++){d[i]=[i];}for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++){d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])d[i][j]=Math.min(d[i][j],d[i-2][j-2]+1);}return d[a.length][b.length];}
+function spellFix(text){const V=vocab();const out=[],seen=new Set();
+  (text.toLowerCase().match(/[a-z]+/g)||[]).forEach(w=>{if(w.length<4||V.has(w)||seen.has(w))return;seen.add(w);let best=null,bd=9;
+    V.forEach(v=>{if(v.length<4||Math.abs(v.length-w.length)>2)return;const dd=lev(w,v);if(dd<bd||(dd===bd&&best&&v.length>best.length)){bd=dd;best=v;}});
+    if(best&&bd<=(w.length>=8?2:1))out.push([w,best]);});return out;}
+function writeTask(d){const f=CUR.f;if(!f.write)return null;const w=el('div','wtask');w.appendChild(el('p','wt','✍ WRITE IT'));w.appendChild(el('p','wq',esc(d.q)));
+  const key='pl2-w-'+d.id;const saved=store.get(key)||{};const save=(k,v)=>{saved[k]=v;store.set(key,saved);};
+  const note=el('p','wmeta');note.hidden=true;const meta=el('p','wmeta');
+  let areas=[],last=null;
+  const mkTA=(k,init,label,rows)=>{const ta=el('textarea');ta.value=saved[k]!=null?saved[k]:(init||'');ta.spellcheck=true;ta.rows=rows||3;ta.setAttribute('aria-label',label);
+    ta.oninput=()=>{save(k,ta.value);upd();};ta.onfocus=()=>{last=ta;};areas.push(ta);return ta;};
+  const insert=txt=>{const ta=last||areas[0];if(!ta)return;const a=ta.selectionStart??ta.value.length,e=ta.selectionEnd??a;const pre=ta.value.slice(0,a);
+    const sp=pre&&!/\s$/.test(pre)?' ':'';ta.value=pre+sp+txt+' '+ta.value.slice(e);const p=(pre+sp+txt+' ').length;ta.focus();try{ta.setSelectionRange(p,p);}catch(_){}ta.dispatchEvent(new Event('input'));};
+  const modelBox=el('p','wmodel','<b>Example answer:</b> '+esc(d.model));modelBox.hidden=true;
+  const modelBtn=()=>{const b=btn('See an example answer','',()=>{modelBox.hidden=!modelBox.hidden;b.textContent=modelBox.hidden?'See an example answer':'Hide the example answer';});return b;};
+  let upd=()=>{};
+  if(!f.write){const ta=mkTA('free','',d.q,4);ta.placeholder='Type your answer here.';w.appendChild(ta);
+    upd=()=>{const n=(ta.value.match(/\S+/g)||[]).length;meta.textContent=n?n+' words':'';};
+    const r=el('div','wtools');r.appendChild(modelBtn());w.append(r,meta,modelBox);upd();return w;}
+  let mode=saved.mode||'guided';
+  const modes=el('div','wtools');modes.setAttribute('role','group');modes.setAttribute('aria-label','How do you want to answer?');
+  const body=el('div','wbody');
+  const bankBox=el('div','prebox');bankBox.appendChild(el('p','pt','Word bank: tap a word to add it where you are typing'));const bank=el('div','wbank');
+  d.bank.forEach(t=>{const b=btn(t,'',()=>insert(t));bank.appendChild(b);});bankBox.appendChild(bank);
+  const fixBox=el('div','wfix');fixBox.hidden=true;
+  const doneCount=()=>mode==='guided'?areas.filter((ta,i)=>ta.value.trim().length>d.parts[i][1].trim().length+8).length:0;
+  upd=()=>{const words=areas.reduce((n,ta)=>n+(ta.value.match(/\S+/g)||[]).length,0);
+    meta.textContent=mode==='guided'?doneCount()+' of '+d.parts.length+' steps written · '+words+' words':words+' words';fixBox.hidden=true;};
+  const wrapTA=ta=>{const r=el('div','wpart');r.appendChild(ta);r.appendChild(micBtn(ta,note));return r;};
+  const draw=()=>{areas=[];last=null;body.innerHTML='';modes.innerHTML='';
+    [['guided','Guided steps'],['bullets','Bullet points'],['free','Free writing']].forEach(([v,t])=>{const b=btn(t,mode===v?'on':'',()=>{mode=v;save('mode',v);draw();});b.setAttribute('aria-pressed',mode===v);modes.appendChild(b);});
+    if(mode==='guided'){d.parts.forEach(([lab,starter],i)=>{const p=wrapTA(mkTA('g'+i,starter,lab,2));const l=el('label','','<span class="wn">'+(i+1)+'</span>'+esc(lab));p.prepend(l);body.appendChild(p);});}
+    else{const pts=el('div','prebox');pts.appendChild(el('p','pt','Make sure you cover'));const ol=el('ol','wpoints');d.parts.forEach(p=>ol.appendChild(el('li','',esc(p[0]))));pts.appendChild(ol);body.appendChild(pts);
+      if(mode==='bullets'){const ta=mkTA('b','• ','Your answer as bullet points',5);
+        ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const a=ta.selectionStart;ta.value=ta.value.slice(0,a)+'\n• '+ta.value.slice(ta.selectionEnd);ta.setSelectionRange(a+3,a+3);ta.dispatchEvent(new Event('input'));}};
+        body.appendChild(wrapTA(ta));}
+      else{const ta=mkTA('free','','Your answer',5);ta.placeholder='Write your answer here.';body.appendChild(wrapTA(ta));}}
+    upd();};
+  const tools=el('div','wtools');
+  tools.appendChild(btn('✔ Check spelling of key words','',()=>{const all=areas.map(a=>a.value).join(' ');const fx=spellFix(all);fixBox.innerHTML='';fixBox.hidden=false;
+    if(!all.trim()){fixBox.className='wfix';fixBox.appendChild(el('div','','Write something first, then check it.'));return;}
+    if(!fx.length){fixBox.className='wfix ok';fixBox.appendChild(el('div','','No spelling slips found in the lesson words. Your browser underlines other words it does not recognise.'));return;}
+    fixBox.className='wfix';fixBox.appendChild(el('div','','Did you mean:'));
+    fx.forEach(([bad,good])=>{const r=el('div','row');r.appendChild(el('span','','<s>'+esc(bad)+'</s> → <b>'+esc(good)+'</b>'));
+      r.appendChild(btn('Fix it','',()=>{const rx=new RegExp('\\b'+bad+'\\b','gi');areas.forEach(a=>{const nv=a.value.replace(rx,m=>m[0]===m[0].toUpperCase()?good[0].toUpperCase()+good.slice(1):good);if(nv!==a.value){a.value=nv;a.dispatchEvent(new Event('input'));}});r.remove();if(!fixBox.querySelector('button'))fixBox.hidden=true;}));fixBox.appendChild(r);});}));
+  tools.appendChild(modelBtn());
+  w.append(modes,body,bankBox,tools,fixBox,note,meta,modelBox);draw();return w;}
 function check(c){const d=el('details','check');d.appendChild(el('summary','','Check yourself'));const w=el('div','cb');d.appendChild(w);
   const draw=a=>{w.innerHTML='';w.appendChild(el('p','q',esc(c.q)));const o=el('div','opts');
     c.o.forEach(([k,t])=>{const b=btn(t,'',()=>draw(k));if(a){if(k===c.ok)b.classList.add('right');else if(k===a)b.classList.add('wrong');}o.appendChild(b);});
@@ -653,7 +862,8 @@ const W={
        ['Without a pipeline, each instruction takes 800 ps.',nf(N)+' × 800 ps = '+nf(np)+' ps'],
        ['With a pipeline, the first instruction needs 5 cycles, then one more cycle for each other instruction.','('+nf(N)+' + 4) × '+clk+' ps = '+nf(p)+' ps'],
        ['Speedup:',nf(np)+' ÷ '+nf(p)+' = '+(np/p).toFixed(2)+' times faster',1]]));
-     const lim=el('p','cx','The more instructions, the closer the speedup gets to '+(s.bal?'5, the number of stages.':'4, which is 800 ÷ 200.'));res.appendChild(lim);};
+     const lim=el('p','cx','The more instructions, the closer the speedup gets to '+(s.bal?'5, the number of stages.':'4, which is 800 ÷ 200.'));res.appendChild(lim);
+      if(CUR.f.math){const sp=np/p;res.appendChild(el('p','sanity','✅ <b>Sanity check:</b> '+(sp<1?'a speedup below 1 means the pipeline is slower. With only one instruction there is nothing to overlap, so this is expected.':'the speedup is above 1, so the pipeline is faster, and it stays below '+(s.bal?'5':'4')+', the limit.')));}};
    r.oninput=()=>{s.ni=+r.value;draw();};draw();return f;},
  hazard(){const s={m:'none'};const f=el('div','sim');f.appendChild(el('p','simt','add and sub, clock cycle by clock cycle'));
    const seg=el('div','row');const tl=el('div','tl');const txt=el('p','fbk');f.append(seg,tl,txt);
@@ -697,10 +907,11 @@ function renderBlock(b,ctx){
   if(b.widget)return W[b.widget]();
   if(b.exercise)return exercise();
   if(b.html)return el('div','',b.html);
-  if(b.check)return check(b.check);}
+  if(b.check)return check(b.check);
+  if(b.write)return writeTask(b.write);}
 function buildSec(c,i){const f=CUR.f;const ctx={f,seen:new Set()};const s=el('section','sec');s.id=c.id;
   const sh=el('div','sh');const h2=el('h2','rd');h2.textContent=c.title;wrapWords(h2);sh.appendChild(h2);
-  sh.appendChild(btn(f.auto?'▶ Read this part to me':'▶ Listen',f.auto?'prime':'',()=>rdPlay(i,0,true)));s.appendChild(sh);
+  if(f.reader)sh.appendChild(btn(f.auto?'▶ Read this part to me':'▶ Listen',f.auto?'prime':'',()=>rdPlay(i,0,true)));s.appendChild(sh);
   const terms=(f.before||f.preview||f.bank)?termsIn(c):[];
   if(f.before)s.appendChild(beforeBox(c,terms));
   if(f.preview){const p=previewBox(terms);if(p)s.appendChild(p);}
@@ -733,24 +944,53 @@ const psel=document.getElementById('psel');
 function tabs(){const box=document.getElementById('ptabs');box.innerHTML='';psel.innerHTML='';
   PROF.forEach(P=>{const b=el('button','ptab');b.type='button';b.setAttribute('role','tab');b.dataset.p=P.id;b.setAttribute('aria-selected',P===CUR);
     b.innerHTML=esc(P.name)+'<small>'+esc(P.sub)+'</small>';b.onclick=()=>choose(P.id);box.appendChild(b);
-    const o=el('option');o.value=P.id;o.textContent=P.id==='base'?'Base lesson':P.name+' profile';psel.appendChild(o);});
+    const o=el('option');o.value=P.id;o.textContent=P.name;psel.appendChild(o);});
   psel.value=CUR.id;psel.onchange=()=>choose(psel.value);colors();}
 function banner(){const b=document.getElementById('foryou');b.innerHTML='';b.appendChild(el('p','',CUR.text));
   if(CUR.on.length){const ch=el('div','chips');CUR.on.forEach(t=>ch.appendChild(el('span','chip',esc(t))));b.appendChild(ch);}
+  if(CUR.f.math){const r=el('div','row');r.appendChild(btn('🧮 Open the formula card and calculator','prime',()=>{mtools.hidden=false;panel.hidden=true;drawDock();}));b.appendChild(r);}
   if(CUR.f.reader){const r=el('div','row');r.appendChild(btn(CUR.f.auto?'▶ Read the lesson to me':'▶ Read to me','prime',()=>rdPlay(SECNOW,0,false)));
     const p=store.get(posKey());if(p&&SECS[p.k])r.appendChild(btn('↺ Resume where I stopped','',()=>rdPlay(p.k,p.j,false)));b.appendChild(r);}}
-function choose(id){CUR=PROF.find(p=>p.id===id)||PROF[0];store.set('pl2-prof',CUR.id);
+function choose(id){CUR=PROF.find(p=>p.id===id)||PROF[0];store.set('pl2-prof',CUR.id);if(!CUR.f.math)mtools.hidden=true;
   SET.len=CUR.f.short?'short':'normal';applySet();drawPanel();psel.value=CUR.id;
   document.querySelectorAll('.ptab').forEach(b=>b.setAttribute('aria-selected',b.dataset.p===CUR.id));colors();build();banner();drawDock();
   if(innerWidth<1180)setSide(false);window.scrollTo({top:0,behavior:'auto'});}
 
 /* ---------- dock + settings ---------- */
-const dock=document.getElementById('dock'),panel=document.getElementById('panel');let lastBusy=null;
+const dock=document.getElementById('dock'),panel=document.getElementById('panel'),mtools=document.getElementById('mtools');let lastBusy=null;
 function drawDock(){dock.innerHTML='';const b=busy();lastBusy=b;
   if(b)dock.appendChild(btn('■ Stop voice','stop',()=>stopSpeech()));
   else if(CUR.f.reader){dock.appendChild(btn('▶ Read to me','prime',()=>rdPlay(SECNOW,0,false)));
     const p=store.get(posKey());if(p&&SECS[p.k])dock.appendChild(btn('↺ Resume','',()=>rdPlay(p.k,p.j,false)));}
-  const s=btn('Aa Reading settings','',()=>{panel.hidden=!panel.hidden;drawDock();});s.setAttribute('aria-expanded',!panel.hidden);s.setAttribute('aria-controls','panel');dock.appendChild(s);}
+  if(CUR.f.math){const m=btn('🧮 Formulas & calculator','',()=>{mtools.hidden=!mtools.hidden;if(!mtools.hidden)panel.hidden=true;drawDock();});m.setAttribute('aria-expanded',!mtools.hidden);m.setAttribute('aria-controls','mtools');dock.appendChild(m);}
+  if(CUR.id==='base'){panel.hidden=true;return;}
+  const s=btn('Aa Reading settings','',()=>{panel.hidden=!panel.hidden;if(!panel.hidden)mtools.hidden=true;drawDock();});s.setAttribute('aria-expanded',!panel.hidden);s.setAttribute('aria-controls','panel');dock.appendChild(s);}
+const FORM=[
+ ['⏱','Pipeline clock cycle',['=','time of the slowest stage'],'MIPS: <b>200 ps</b>'],
+ ['📏','Time without a pipeline',['=','instructions','×','time per instruction'],'3 × 800 ps = <b>2400 ps</b>'],
+ ['⚡','Time with a pipeline',['=','(','instructions','+','stages','−','1',')','×','clock cycle'],'(3 + 4) × 200 ps = <b>1400 ps</b>'],
+ ['🔢','Total clock cycles',['=','instructions','+','(','stages','−','1',')','+','stalls'],'7 + 4 + 2 = <b>13</b>'],
+ ['🚀','Speedup',['=','old time','÷','new time'],'800 ps ÷ 200 ps = <b>4× faster</b>']];
+const UNITS=['1 ps = 1 picosecond = one trillionth of a second','1000 ps = 1 ns','60 min = 1 hour, so 30 min = 0.5 hours'];
+function fitem(icon,name){const it=el('div','fitem');it.appendChild(el('div','fh','<span class="fic" aria-hidden="true">'+icon+'</span>'+esc(name)));return it;}
+function drawMtools(){mtools.innerHTML='';const hd=el('div','row');hd.style.justifyContent='space-between';hd.appendChild(el('h3','','Formula card'));
+  hd.appendChild(btn('Close','',()=>{mtools.hidden=true;drawDock();}));mtools.appendChild(hd);
+  const fc=el('div','fcard');
+  FORM.forEach(([ic,n,toks,ex])=>{const it=fitem(ic,n);const fx=el('div','fx');
+    toks.forEach(t=>fx.appendChild(/^[=×÷+−()]$/.test(t)?el('span','op',t):/^\d+$/.test(t)?el('span','n',t):el('span','v',esc(t))));
+    it.appendChild(fx);it.appendChild(el('div','fe','<span>Example</span><code>'+ex+'</code>'));fc.appendChild(it);});
+  const u=fitem('📐','Units');const ul=el('ul','fu');UNITS.forEach(x=>ul.appendChild(el('li','',esc(x))));u.appendChild(ul);fc.appendChild(u);
+  mtools.appendChild(fc);
+  mtools.appendChild(el('h3','','Calculator'));
+  const pad=el('div','cpad');const inp=el('input');inp.type='text';inp.inputMode='decimal';inp.placeholder='e.g. (3 + 4) × 200';inp.setAttribute('aria-label','Calculation');
+  const out=el('p','cres');out.setAttribute('aria-live','polite');
+  const go=()=>{const raw=inp.value.trim();if(!raw){out.textContent='';return;}const ex=raw.replace(/×|x/gi,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/,/g,'');
+    if(!/^[\d\s+\-*/().]+$/.test(ex)){out.textContent='Use only numbers and + − × ÷ ( )';return;}
+    try{const v=Function('"use strict";return ('+ex+')')();out.textContent=Number.isFinite(v)?'= '+(+v.toFixed(6)).toLocaleString('en-US'):'Cannot divide by zero';}catch(e){out.textContent='Check the brackets and signs';}};
+  inp.onkeydown=e=>{if(e.key==='Enter')go();};pad.append(inp,btn('=','prime',go));mtools.append(pad,out);
+  const keys=el('div','wtools');['×','÷','+','−','(',')'].forEach(k=>keys.appendChild(btn(k,'',()=>{inp.value+=' '+k+' ';inp.focus();})));
+  keys.appendChild(btn('Clear','',()=>{inp.value='';out.textContent='';inp.focus();}));mtools.appendChild(keys);
+  mtools.appendChild(el('p','note','Tip: write the units on paper as you go, then check the answer against the sanity check.'));}
 setInterval(()=>{if(busy()!==lastBusy)drawDock();},400);
 function drawPanel(){panel.innerHTML='';const hd=el('div','row');hd.style.justifyContent='space-between';hd.appendChild(el('h3','','Reading settings'));
   hd.appendChild(btn('Close','',()=>{panel.hidden=true;drawDock();}));panel.appendChild(hd);
@@ -764,7 +1004,6 @@ function drawPanel(){panel.innerHTML='';const hd=el('div','row');hd.style.justif
   rng('Word spacing','ws',0,.6,.05,v=>v?'+'+v.toFixed(2)+' em':'normal');
   rng('Letter spacing','ls',0,.15,.01,v=>v?'+'+v.toFixed(2)+' em':'normal');
   rng('Reading speed of the voice','rate',.5,1.4,.05,v=>v.toFixed(2)+'×');
-  segSet('Line length','len',[['normal','Normal'],['short','Short lines']]);
   segSet('Word guide','guide',[['off','Off'],['word','Highlight word on hover'],['line','Reading ruler']]);
   const t=el('div','row');t.appendChild(btn('🔊 Test the voice speed','',()=>{try{const ss=speechSynthesis;ss.cancel();const u=new SpeechSynthesisUtterance('This is how fast I will read to you.');u.rate=RATE();ss.speak(u);}catch(e){}}));
   t.appendChild(btn('Reset','',()=>{SET=Object.assign({},DEF,{len:CUR.f.short?'short':'normal'});applySet();drawPanel();}));panel.appendChild(t);
@@ -772,12 +1011,12 @@ function drawPanel(){panel.innerHTML='';const hd=el('div','row');hd.style.justif
 const ruler=document.getElementById('ruler');const moveR=y=>{ruler.style.top=(y-ruler.offsetHeight/2)+'px';};
 addEventListener('mousemove',e=>{if(SET.guide==='line')moveR(e.clientY);},{passive:true});
 addEventListener('touchmove',e=>{if(SET.guide==='line'&&e.touches[0])moveR(e.touches[0].clientY);},{passive:true});
-addEventListener('keydown',e=>{if(e.key==='Escape'){if(!panel.hidden){panel.hidden=true;drawDock();}else if(busy())stopSpeech();else if(document.body.classList.contains('side-open')&&innerWidth<1180)setSide(false);}});
+addEventListener('keydown',e=>{if(e.key==='Escape'){if(!mtools.hidden){mtools.hidden=true;drawDock();}else if(!panel.hidden){panel.hidden=true;drawDock();}else if(busy())stopSpeech();else if(document.body.classList.contains('side-open')&&innerWidth<1180)setSide(false);}});
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',colors);}catch(e){}
 
 /* ---------- start ---------- */
 CUR=PROF.find(p=>p.id===store.get('pl2-prof'))||PROF[0];
-setHH();tabs();applySet();drawPanel();build();banner();drawDock();
+setHH();tabs();applySet();drawPanel();drawMtools();build();banner();drawDock();
 const sideSaved=store.get('pl2-side');setSide(innerWidth>=1180?(sideSaved!==false):false);
 </script>
 
