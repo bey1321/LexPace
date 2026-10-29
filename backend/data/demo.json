@@ -188,6 +188,13 @@
     "version": "base",
     "skills": null,
     "source": "skipped",
-    "updatedAt": "2026-10-29T05:13:12+00:00"
+    "updatedAt": "2026-10-29T16:22:41+00:00"
+  },
+  "lexpaceCheck": {
+    "status": "ok",
+    "at": "2026-10-29T16:21:50+00:00",
+    "reading": true,
+    "writing": false,
+    "math": false
   }
 }

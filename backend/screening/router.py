@@ -137,6 +137,13 @@ def create_router(on_result: Callable[[dict], None] | None = None) -> APIRouter:
                     s.writing_eval = {"status": "not_scored", "reason": f"evaluation failed: {type(e).__name__}"}
             vector = features.extract(s)
             result = classifier.classify(vector, session=s)
+            # DEMO ONLY (remove before merging): a "Skip to end" session gets sample results when no model is connected.
+            if s.context.get("demo") is True and result.get("status") != "ok":
+                result = {"status": "ok", "model": "demo-sample", "message": "Sample results for a demo",
+                          "feature_version": features.FEATURE_VERSION,
+                          "outputs": {"reading": {"probability": 0.82, "positive": True},
+                                      "writing": {"probability": 0.31, "positive": False},
+                                      "math": {"probability": 0.24, "positive": False}}}
             s.result = {"features": vector, "classification": result}
             s.result["saved_as"] = store.save(s)
             if on_result:

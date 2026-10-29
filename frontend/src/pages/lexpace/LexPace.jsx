@@ -11,6 +11,11 @@ import "./lexpace.css";
 // The village check asks first whether Arabic is the student's mother tongue, then opens the
 // Arabic or English version. The classic pages (journey/en.html, ar.html) are still served.
 const SCREENING_SRC = "/lexpace/journey/village.html";
+// The village keeps the last summary in this browser (see journey-api.js).
+const SUMMARY_KEY = "lexpace:last-summary";
+function lastSummaryLang() {
+  try { return JSON.parse(localStorage.getItem(SUMMARY_KEY) || "null")?.lang || null; } catch { return null; }
+}
 
 const SOURCE_NOTE = {
   screening: "from your check",
@@ -32,11 +37,14 @@ const TITLES = { check: "LexPace check", training: "Training", courses: "My cour
 function Layout() {
   const { pathname } = useLocation();
   const section = pathname.split("/")[2];
+  if (section === "check") return <div className="lxh"><Outlet /></div>; // the check draws its own green header
   return (
     <div className="lxh">
       <header className={"page-header" + (section ? " frame-header" : "")}>
-        {section && <Link to="/lexpace-hub" className="back-link"><Icon name="back" size={18} />LexPace</Link>}
-        <h1 className="page-title">{TITLES[section] || "LexPace"}</h1>
+        {section === "results" && lastSummaryLang()
+          ? <Link to="/lexpace-hub/check" className="back-link"><Icon name="back" size={18} />LexPace check</Link>
+          : section && <Link to="/lexpace-hub" className="back-link"><Icon name="back" size={18} />LexPace</Link>}
+        {section !== "check" && <h1 className="page-title">{TITLES[section] || "LexPace"}</h1>}
       </header>
       <Outlet />
     </div>
@@ -461,10 +469,25 @@ function Field({ label, id, value, onChange, options }) {
 
 function Check() {
   const navigate = useNavigate();
+  const { search } = useLocation();
+  // Two tabs: Check (the village, always fresh) and Results (the last check's summary, ?summary=1).
+  const [hasSummary, setHasSummary] = useState(() => !!lastSummaryLang());
+  const lang = new URLSearchParams(search).has("summary") && lastSummaryLang();
+  const src = lang ? `/lexpace/journey/village-${lang}.html?summary=1` : SCREENING_SRC;
   useEffect(() => {
     const onMessage = (e) => {
-      if (e.origin === window.location.origin && e.data?.type === "lexpace:check-complete") {
+      if (e.origin !== window.location.origin) return;
+      const type = e.data?.type;
+      if (type === "lexpace:check-complete") { // classic pages: straight to the results
         setTimeout(() => navigate("/lexpace-hub/results"), 1500); // the saved format is updated by then
+      } else if (type === "lexpace:summary-saved") {
+        setHasSummary(true);
+        navigate("/lexpace-hub/check?summary=1", { replace: true }); // the Results tab shows what is on screen
+      } else if (type === "lexpace:open-results") { // summary -> what the results mean; Back: a fresh check
+        navigate("/lexpace-hub/check", { replace: true });
+        navigate("/lexpace-hub/results");
+      } else if (type === "lexpace:summary-closed") { // X: a fresh screening
+        navigate("/lexpace-hub/check");
       }
     };
     window.addEventListener("message", onMessage);
@@ -476,13 +499,19 @@ function Check() {
   };
   return (
     <div className="lxh-frame">
-      <div className="lecture-bar">
-        <span className="lecture-title">LexPace check</span>
+      <header className="lxh-check-bar">
+        <Link to="/lexpace-hub" className="back-link"><Icon name="back" size={18} />LexPace</Link>
+        <div className="lxh-tabs" role="tablist" aria-label="LexPace check">
+          <Link role="tab" aria-selected={!lang} className={"lxh-tab" + (!lang ? " is-on" : "")} to="/lexpace-hub/check">Check</Link>
+          {hasSummary
+            ? <Link role="tab" aria-selected={!!lang} className={"lxh-tab" + (lang ? " is-on" : "")} to="/lexpace-hub/check?summary=1">Results</Link>
+            : <span role="tab" aria-disabled="true" className="lxh-tab is-off" title="Finish the check to see your results">Results</span>}
+        </div>
         <button type="button" className="bb-btn bb-btn-secondary lecture-bar-end" onClick={leave}>
           Go to my courses <Icon name="back" size={16} className="icon-flip" />
         </button>
-      </div>
-      <iframe className="lexpace-frame" src={SCREENING_SRC} title="LexPace check" />
+      </header>
+      <iframe key={src} className="lexpace-frame" src={src} title="LexPace check" />
     </div>
   );
 }
@@ -592,7 +621,7 @@ function Chapter() {
 }
 
 // DEMO ONLY (remove before pushing): every page refresh starts as a first-time visitor.
-// Clears the saved format once per page load, so the Welcome screen shows again.
+// Clears the saved format and the last results summary once per page load, so the Welcome screen shows again.
 let demoResetDone = false;
 
 export default function LexPace() {
@@ -600,6 +629,7 @@ export default function LexPace() {
   useEffect(() => {
     if (demoResetDone) return;
     demoResetDone = true;
+    try { localStorage.removeItem(SUMMARY_KEY); } catch { /* storage blocked: nothing saved */ }
     saveVersion(null).finally(() => setReady(true));
   }, []);
   if (!ready) return null;
