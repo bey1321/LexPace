@@ -3,8 +3,8 @@
 - /api/...                 small JSON API backed by data/demo.json
 - /api/screening/...       adaptive EN/AR screening (LLM item generation, evaluation, features, classifier)
 - /lexpace/...             screening + adaptation, served as static files (copies of the originals)
-- /api/sas/...             SAS Portal API (sas.py); the staff page is /lexpace/sas/
 - /lexpace/training/...    reverse proxy to the training app's own Node server
+- /api/sas/student/...     pass-through to the SAS Portal (student side only: My SAS requests)
 - /api/rap, /rap, /dev/login, /internal/rap
                            also proxied: the training app uses these absolute paths
 - everything else          the built React shell (frontend/dist), with SPA fallback
@@ -24,13 +24,14 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from screening.router import create_router as create_screening_router
-from sas import create_router as create_sas_router
 
 HERE = Path(__file__).resolve().parent
 DATA_FILE = HERE / "data" / "demo.json"
 LEXPACE_DIR = HERE / "static" / "lexpace"
 DIST_DIR = HERE.parent / "frontend" / "dist"
 TRAINING_URL = os.environ.get("TRAINING_URL", "http://127.0.0.1:3000")
+# The SAS Portal runs on its own (sas-portal/, port 8010). Students reach it only through /api/sas/student/...
+SAS_URL = os.environ.get("SAS_URL", "http://127.0.0.1:8010")
 
 # Lesson versions of adaptation.html (its localStorage key "pl2-prof" uses the same ids).
 # Only skill flags and the chosen version are stored, never a condition label.
@@ -125,12 +126,33 @@ def set_profile(body: SupportIn):
 VERSION_FOR_LABEL = {"reading": "read", "writing": "write", "math": "calc"}
 
 
+def save_check_summary(classification: dict) -> None:
+    """Keeps only what the student may later choose to share: three yes/no results, or "pending"."""
+    ok = classification.get("status") == "ok"
+    outputs = classification.get("outputs") or {}
+    summary = {"status": "ok" if ok else "pending",
+               "at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    if ok:
+        summary.update({k: bool(outputs.get(k, {}).get("positive")) for k in VERSION_FOR_LABEL})
+    with _lock:
+        data = load_data()
+        data["lexpaceCheck"] = summary
+        save_data(data)
+
+
+@app.get("/api/lexpace/check")
+def get_check():
+    """The latest check result in plain terms, or {"status": null} if the student hasn't taken it."""
+    return load_data().get("lexpaceCheck") or {"status": None}
+
+
 def save_screening_result(classification: dict) -> None:
     """Trained model outputs -> skill flags + lesson version.
     One positive output picks its version; several pick the highest probability; none -> base.
     Without model outputs the student gets the base lesson (marked pending), unless they already
     have a version, which is kept.
     TODO(stacking): combine supports once the lecture page can show more than one."""
+    save_check_summary(classification)
     if classification.get("status") != "ok":
         if get_profile()["version"] is None:
             set_profile(SupportIn(version="base", source="screening_pending"))
@@ -144,9 +166,6 @@ def save_screening_result(classification: dict) -> None:
 
 
 app.include_router(create_screening_router(on_result=save_screening_result))
-
-# SAS Portal (staff side) and the student routes that send requests to it. Page: /lexpace/sas/
-app.include_router(create_sas_router(get_me=lambda: load_data()["me"]))
 
 
 # ---------------------------------------------------------------- training proxy
@@ -229,6 +248,31 @@ async def training_pages(request: Request, path: str):
 @app.get("/dev/login")
 async def training_login(request: Request):
     return await proxy(request, "/dev/login")
+
+
+# ---------------------------------------------------------------- SAS Portal (student side)
+
+@app.api_route("/api/sas/student/{path:path}", methods=["GET", "POST"])
+async def sas_student(request: Request, path: str):
+    """Only the student routes are forwarded; staff routes stay on the SAS Portal itself."""
+    body = await request.body()
+    if request.method == "POST" and path == "requests":
+        try:
+            form = json.loads(body or b"{}")
+        except ValueError:
+            form = {}
+        check = load_data().get("lexpaceCheck") or {"status": "pending"}
+        form["results"] = {k: check[k] for k in ("status", "reading", "writing", "math") if k in check}
+        body = json.dumps(form).encode()
+    try:
+        async with httpx.AsyncClient(base_url=SAS_URL, timeout=15.0) as client:
+            r = await client.request(request.method, f"/api/sas/student/{path}", params=request.query_params,
+                                     content=body,
+                                     headers={"content-type": request.headers.get("content-type", "application/json")})
+    except httpx.TransportError:
+        return Response('{"detail": "SAS is not reachable right now. Please try again later."}',
+                        status_code=503, media_type="application/json")
+    return Response(r.content, status_code=r.status_code, media_type="application/json")
 
 
 # ---------------------------------------------------------------- static parts + SPA

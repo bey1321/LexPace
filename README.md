@@ -241,3 +241,15 @@ No UI library, and no CDN in the shell.
   screening has a writing task and a calculation task.
 - **Testing:** the end-to-end check ran in Chromium (Playwright) on the single-port build. The
   screening hand-off was tested by calling its hook with a sample result, not by playing all 7 games.
+
+## My SAS requests (student side of the SAS Portal)
+
+**LexPace → My SAS requests** lists the requests the student sent to Student Accessibility Services:
+status, their contact person, the specialist's message with **Accept** / **Not now**, **Withdraw**
+and **Raise a concern**. The SAS Portal itself is a separate app (`../sas-portal`, port 8010);
+LexPace's backend forwards only `/api/sas/student/...` to it (`SAS_URL`, default
+`http://127.0.0.1:8010`). Start it with `python run.py` in `sas-portal/` before the demo. If it is
+not running, the page says SAS is not reachable.
+
+Demo: the sample case **R-102** belongs to the demo student and waits for a reply. Accept it in
+LexPace, then see it as **In progress** in the SAS Portal (LD specialist, My cases).

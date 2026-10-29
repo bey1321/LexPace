@@ -37,7 +37,11 @@ const LP = {
   finish(history, extra) {
     if (this.final || this.pending.final) return this.final;
     this.pending.final = this.post('/sessions/' + this.sid + '/complete', { history, ...extra })
-      .then((r) => { this.final = r; delete this.pending.final; render(); })
+      .then((r) => {
+        this.final = r; delete this.pending.final; render();
+        // LexPace integration: tell the LexPace page the check is done, so it can show next steps.
+        try { if (window.parent !== window) window.parent.postMessage({ type: 'lexpace:check-complete' }, location.origin); } catch (e) {}
+      })
       .catch((e) => { delete this.pending.final; this.fail(e); });
     show(this.loading());
     return null;
