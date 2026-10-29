@@ -211,7 +211,8 @@ def test_json_model_gives_independent_multilabel_outputs(tmp_path):
 # ---------------------------------------------------------------- full session over HTTP (LLM off)
 
 @pytest.mark.parametrize("lang", ["en", "ar"])
-def test_full_session_api(client, no_llm, lang, tmp_path):
+def test_full_session_api(client, no_llm, lang, tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "CLASSIFIER_FACTORY", "none")  # this test covers the "no model connected" path
     s = client.post("/api/screening/sessions", json={"language": lang, "context": {"hearing": True}}).json()
     sid, plan = s["session_id"], s["plan"]
     assert plan == {a: v["trials"] for a, v in ACTIVITIES.items()}
