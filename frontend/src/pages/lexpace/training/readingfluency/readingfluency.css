@@ -1,0 +1,53 @@
+/* Reading Fluency Practice: the prototype's own look, scoped under .rf- (see numbersense.css
+   for why - same reasoning: "do not redesign the interface"). */
+.rf {
+  --rf-ink: #111111; --rf-muted: #5a5a5a; --rf-line: #d4d4d4; --rf-soft: #f3f3f3;
+  --rf-mono: Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 15px; line-height: 1.5; color: var(--rf-ink);
+}
+.rf-panel { border: 1px solid var(--rf-line); border-radius: 6px; display: flex; flex-direction: column; min-height: 560px; background: #fff; }
+.rf-shead { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--rf-line); flex-wrap: wrap; }
+.rf-shead b { font-size: 15px; }
+.rf-tag { font-size: 12px; border: 1px solid var(--rf-ink); border-radius: 12px; padding: 2px 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rf-tag.is-f { background: var(--rf-ink); color: #fff; }
+.rf-sp { flex: 1; }
+.rf-count { font-size: 14px; font-variant-numeric: tabular-nums; }
+.rf-progress { height: 4px; background: #e5e5e5; }
+.rf-progress i { display: block; height: 4px; width: 0; background: var(--rf-ink); transition: width .2s; }
+.rf-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px 20px; gap: 22px; text-align: center; }
+.rf-lab { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--rf-muted); margin: 0; }
+.rf-sentence { font-family: var(--rf-mono); font-size: clamp(19px, 2.6vw, 30px); line-height: 1.55; text-align: left; max-width: 30em; width: 100%; white-space: pre-wrap; min-height: 3.1em; }
+.rf-sentence span.rf-e { visibility: hidden; }
+.rf-key { display: inline-flex; border: 1px solid var(--rf-ink); border-bottom-width: 3px; border-radius: 4px; padding: 1px 10px; font-size: 12px; font-weight: 700; line-height: 1.5; }
+.rf-btn { background: var(--rf-ink); color: #fff; border: 1px solid var(--rf-ink); border-radius: 4px; padding: 11px 22px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.rf-btn.rf-o { background: #fff; color: var(--rf-ink); }
+.rf-btn.rf-sm { padding: 6px 14px; font-size: 13px; }
+.rf-intro { max-width: 600px; text-align: left; display: grid; gap: 14px; }
+.rf-intro h1 { font-size: 24px; margin: 0; text-wrap: balance; }
+.rf-intro ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.rf-intro .rf-big { font-size: 44px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.rf-q { max-width: 660px; width: 100%; text-align: left; display: grid; gap: 10px; }
+.rf-q h2 { font-size: 21px; margin: 0 0 6px; text-wrap: balance; }
+.rf-opt { display: flex; align-items: center; gap: 12px; border: 1px solid #b5b5b5; border-radius: 6px; padding: 13px 15px; background: #fff; color: var(--rf-ink); font-size: 16px; text-align: left; width: 100%; cursor: pointer; }
+.rf-opt:hover { border-color: var(--rf-ink); }
+.rf-opt .rf-k { width: 26px; height: 26px; border: 1px solid var(--rf-ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex: none; }
+.rf-opt.is-sel { border: 2px solid var(--rf-ink); background: var(--rf-soft); }
+.rf-opt.is-sel .rf-k { background: var(--rf-ink); color: #fff; }
+.rf-opt:disabled { cursor: default; }
+.rf-fb { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--rf-line); padding-top: 14px; margin-top: 6px; }
+.rf-res { font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.rf-dots { display: inline-flex; gap: 5px; align-items: center; }
+.rf-dots i { width: 11px; height: 11px; border: 1px solid var(--rf-ink); border-radius: 50%; display: inline-block; }
+.rf-dots i.is-d { background: var(--rf-ink); }
+.rf-msg { font-size: 14px; color: var(--rf-muted); margin: 0; }
+.rf-sfoot { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--rf-line); font-size: 13px; color: var(--rf-muted); flex-wrap: wrap; }
+
+/* staff-only presenter panel */
+.rf-side { border: 1px dashed #9a9a9a; border-radius: 6px; padding: 16px; font-size: 13px; display: grid; gap: 12px; margin-top: 20px; }
+.rf-side h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; margin: 0; }
+.rf-side dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 5px 12px; }
+.rf-side dt { color: var(--rf-muted); } .rf-side dd { margin: 0; font-weight: 600; text-align: right; overflow-wrap: anywhere; }
+.rf-side table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.rf-side th, .rf-side td { text-align: left; padding: 4px 4px; border-bottom: 1px solid #e3e3e3; white-space: nowrap; }
+.rf-chip { display: inline-block; border: 1px solid var(--rf-ink); border-radius: 10px; padding: 0 8px; font-size: 11px; font-weight: 700; }
+.rf-chip.is-f { background: var(--rf-ink); color: #fff; }
