@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import Icon from "../../components/Icon.jsx";
 import { VERSION_OPTIONS, getJSON, saveVersion, useApi, writeLectureVersion } from "../../api.js";
+import TrainingHub from "./training/TrainingHub.jsx";
 import "./lexpace.css";
 
 // LexPace as one place in Blackboard: the optional check, training, and My courses
 // (each course's chapters, opened in the student's lesson version).
-
-const TRAINING_SRC = "/lexpace/training/dev/login?userId=2023006229&course=ca";
 
 // The village check asks first whether Arabic is the student's mother tongue, then opens the
 // Arabic or English version. The classic pages (journey/en.html, ar.html) are still served.
@@ -488,14 +487,6 @@ function Check() {
   );
 }
 
-function Training() {
-  return (
-    <div className="lxh-frame">
-      <iframe className="lexpace-frame" src={TRAINING_SRC} title="LexPace Training" />
-    </div>
-  );
-}
-
 function MyCourses() {
   const [support, setSupport] = useApi("/api/lexpace/profile");
   const [courses] = useApi("/api/courses");
@@ -617,7 +608,7 @@ export default function LexPace() {
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="check" element={<Check />} />
-        <Route path="training" element={<Training />} />
+        <Route path="training/*" element={<TrainingHub />} />
         <Route path="requests" element={<MyRequests />} />
         <Route path="results" element={<Results />} />
         <Route path="courses" element={<MyCourses />} />
