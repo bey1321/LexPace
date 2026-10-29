@@ -9,6 +9,7 @@ const ITEMS = [
   ["/messages", "Messages", "mail"],
   ["/grades", "Grades", "grades"],
   ["/tools", "Tools", "tools"],
+  ["/lexpace-hub", "LexPace", "book"],
 ];
 
 const navClass = ({ isActive }) => "nav-item" + (isActive ? " is-active" : "");

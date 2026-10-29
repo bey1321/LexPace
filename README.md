@@ -31,22 +31,27 @@ FastAPI (`python -m uvicorn main:app --app-dir backend --port 8000`), then Vite
 
 ## 2-minute click-path for judges
 
-1. **Courses** opens on the single Computer Architecture card. Click it.
-2. The course page looks like Blackboard Ultra: content list, folders that open and close, and Course Faculty on the right.
-   Open the new **LexPace** tab (last tab, after Achievements).
-3. On the first visit, **Welcome to LexPace** offers two choices:
-   - **Start the check**: the 7-station adaptive check opens inside the course, in **English** or
-     **العربية** (switch in the bar above it). Questions adapt to accuracy and speed; the maths
-     stations keep their timers. **Go to my materials** in the same bar leaves at any time.
-   - **Skip and go to my materials**: opens the adapted materials directly, on the base lesson.
-4. **My adapted materials** shows the lesson version and where it came from: *check skipped*,
-   *check done, results pending* (until the trained model is connected), or *from your check*.
-   Use **Change version** to pick another one (for example *Reading support*), or **Take the
-   LexPace check** to do the check later.
-5. Click **Week 6–7: Pipelining (Chapter 4)**. The adapted lecture opens inside the course on that
-   version. The other weeks are greyed out ("Adaptation coming soon").
-6. In the lecture's left menu, switch between the four versions (for example *Writing support*, then
-   *Calculation support*) and show how the same page adapts.
+LexPace has its own item in the sidebar, **LexPace** (below Tools). On the **first visit** it shows
+**Welcome to LexPace** with **Start the check** or **Skip for now**. After that it looks like the
+Tools page: three tiles, **LexPace check** (to retake), **My courses** and **Training**. Each page
+has a **← LexPace** link back. If the check was skipped, My courses shows one quiet line offering it.
+
+1. **LexPace check** (optional): the 7-station adaptive check in **English** or **العربية**.
+   Questions adapt to accuracy and speed; the maths stations keep their timers. **Go to my
+   courses** in the bar above it leaves at any time (skipping it means the base lesson).
+2. **My courses** shows **Your format** and where it came from: *check skipped*, *check done,
+   results pending* (until the trained model is connected), or *from your check*. **Change
+   format** picks another one (for example *Reading support*).
+3. **My courses** lists the courses. Open **Computer Architecture** to see the chapters the teacher
+   uploaded. Each one says **Ready in your format** or **Not in your format yet**.
+4. Click **Week 6–7: Pipelining (Chapter 4)**. The adapted lecture opens on your format. In its
+   left menu, switch between the four versions and show how the same page adapts.
+5. Click any other chapter: it shows **Generate this format**. In this demo it answers "Coming
+   soon"; only Week 6–7 is transformed.
+6. **Training**: accelerated reading training (calibration → session → progress), saved by the
+   training app's own server.
+
+The old entry points (the course's LexPace tab, Tools → LexPace Training) redirect here.
 
 To show the welcome screen again, run in the browser console:
 `fetch('/api/lexpace/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"version":null}'})`.
@@ -72,9 +77,6 @@ diagnosis label.
   irregular words, reading speed), or if the ML model's reading signal is at or above `modelRisk`.
 - **writing** and **math**: always `false` for now. The screening has no writing or calculation
   task yet (*TODO in `src/scoring/rules.js`*).
-7. **Tools → LexPace Training**: accelerated reading training (calibration → session → progress),
-   saved by the training app's own server.
-
 
 ## Adaptive screening (English and Arabic)
 
@@ -239,3 +241,15 @@ No UI library, and no CDN in the shell.
   screening has a writing task and a calculation task.
 - **Testing:** the end-to-end check ran in Chromium (Playwright) on the single-port build. The
   screening hand-off was tested by calling its hook with a sample result, not by playing all 7 games.
+
+## My SAS requests (student side of the SAS Portal)
+
+**LexPace → My SAS requests** lists the requests the student sent to Student Accessibility Services:
+status, their contact person, the specialist's message with **Accept** / **Not now**, **Withdraw**
+and **Raise a concern**. The SAS Portal itself is a separate app (`../sas-portal`, port 8010);
+LexPace's backend forwards only `/api/sas/student/...` to it (`SAS_URL`, default
+`http://127.0.0.1:8010`). Start it with `python run.py` in `sas-portal/` before the demo. If it is
+not running, the page says SAS is not reachable.
+
+Demo: the sample case **R-102** belongs to the demo student and waits for a reply. Accept it in
+LexPace, then see it as **In progress** in the SAS Portal (LD specialist, My cases).

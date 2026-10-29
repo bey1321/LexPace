@@ -149,34 +149,45 @@
     {
       "id": "w1",
       "title": "Week 1: Computer Abstractions and Technology (Chapter 1)",
-      "available": false
+      "available": false,
+      "courseId": "ca"
     },
     {
       "id": "w2-3",
-      "title": "Week 2–3: Instructions: Language of the Computer (Chapter 2)",
-      "available": false
+      "title": "Week 2â€“3: Instructions: Language of the Computer (Chapter 2)",
+      "available": false,
+      "courseId": "ca"
     },
     {
       "id": "w4-5",
-      "title": "Week 4–5: Arithmetic for Computers (Chapter 3)",
-      "available": false
+      "title": "Week 4â€“5: Arithmetic for Computers (Chapter 3)",
+      "available": false,
+      "courseId": "ca"
     },
     {
       "id": "w6-7",
-      "title": "Week 6–7: Pipelining (Chapter 4)",
+      "title": "Week 6â€“7: Pipelining (Chapter 4)",
       "available": true,
-      "url": "/lexpace/adaptation.html"
+      "url": "/lexpace/adaptation.html",
+      "courseId": "ca"
     },
     {
       "id": "w8-9",
-      "title": "Week 8–9: Memory Hierarchy (Chapter 5)",
-      "available": false
+      "title": "Week 8â€“9: Memory Hierarchy (Chapter 5)",
+      "available": false,
+      "courseId": "ca"
     },
     {
       "id": "w10",
       "title": "Week 10: Parallel Processors (Chapter 6)",
-      "available": false
+      "available": false,
+      "courseId": "ca"
     }
   ],
-  "lexpaceSupport": null
+  "lexpaceSupport": {
+    "version": "base",
+    "skills": null,
+    "source": "skipped",
+    "updatedAt": "2026-10-29T05:13:12+00:00"
+  }
 }

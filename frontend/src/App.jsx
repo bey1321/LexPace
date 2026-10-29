@@ -4,9 +4,9 @@ import HelpButton from "./components/HelpButton.jsx";
 import Profile from "./pages/Profile.jsx";
 import Courses from "./pages/Courses.jsx";
 import Tools from "./pages/Tools.jsx";
-import ToolFrame from "./pages/ToolFrame.jsx";
 import EmptyPage from "./pages/EmptyPage.jsx";
 import CoursePage from "./pages/CoursePage.jsx";
+import LexPace from "./pages/lexpace/LexPace.jsx";
 
 function Shell() {
   return (
@@ -30,9 +30,10 @@ export default function App() {
         <Route path="messages" element={<EmptyPage title="Messages" icon="mail" text="No messages yet." />} />
         <Route path="grades" element={<EmptyPage title="Grades" icon="grades" text="No grades have been posted yet." />} />
         <Route path="tools" element={<Tools />} />
-        {/* The LexPace check now lives in the course's LexPace tab */}
-        <Route path="tools/screening" element={<Navigate to="/courses/ca/lexpace/screening" replace />} />
-        <Route path="tools/training" element={<ToolFrame title="LexPace Training" src="/lexpace/training/dev/login?userId=2023006229&course=ca" />} />
+        <Route path="lexpace-hub/*" element={<LexPace />} />
+        {/* Old entry points now live in LexPace */}
+        <Route path="tools/screening" element={<Navigate to="/lexpace-hub/check" replace />} />
+        <Route path="tools/training" element={<Navigate to="/lexpace-hub/training" replace />} />
         <Route path="signout" element={<EmptyPage title="Signed out" icon="signout" text="This is a demo, so there is nothing to sign out of. Pick any item on the left to continue." />} />
       </Route>
       <Route path="courses/:courseId/*" element={<CoursePage />} />
