@@ -9,10 +9,9 @@ import "./lexpace.css";
 
 const TRAINING_SRC = "/lexpace/training/dev/login?userId=2023006229&course=ca";
 
-const SCREENING_LANGS = [
-  { label: "English", lang: "en", src: "/lexpace/journey/en.html" },
-  { label: "العربية", lang: "ar", src: "/lexpace/journey/ar.html" },
-];
+// The village check asks first whether Arabic is the student's mother tongue, then opens the
+// Arabic or English version. The classic pages (journey/en.html, ar.html) are still served.
+const SCREENING_SRC = "/lexpace/journey/village.html";
 
 const SOURCE_NOTE = {
   screening: "from your check",
@@ -265,6 +264,8 @@ const FORMAT_INFO = {
   calc: "Every calculation starts with what you know, shows a picture, goes one step at a time and ends with a sanity check. A formula card and calculator are always close.",
 };
 const RESULT_NAMES = [["reading", "Reading support"], ["writing", "Writing support"], ["math", "Calculation support"]];
+// The skills the screening model looks at, as shown with its result.
+const SKILL_NAMES = [["reading", "Reading"], ["writing", "Writing"], ["math", "Mathematics"]];
 
 function Results() {
   const [check] = useApi("/api/lexpace/check");
@@ -298,12 +299,18 @@ function Results() {
         )}
         {ok && (
           <>
+            {anySuggested ? (
+              <p>Your gameplay shows <b>indicators of learning disabilities</b> in:{" "}
+                <b>{SKILL_NAMES.filter(([k]) => check[k]).map(([, n]) => n).join(", ")}</b>.</p>
+            ) : (
+              <p>Your gameplay did not show indicators of learning disabilities in reading, writing or mathematics.</p>
+            )}
             <ul className="lxh-results">
-              {RESULT_NAMES.map(([k, name]) => (
-                <li key={k}><b>{name}:</b> {check[k] ? "suggested" : "not indicated"}</li>
+              {SKILL_NAMES.map(([k, name]) => (
+                <li key={k}><b>{name}:</b> {check[k] ? "indicators found" : "no indicators"}</li>
               ))}
             </ul>
-            <p className="lxh-req-meta">This is a screening, not a diagnosis.</p>
+            <p className="lxh-req-meta">This is a screening by a trained model, not a diagnosis.</p>
           </>
         )}
       </section>
@@ -454,7 +461,6 @@ function Field({ label, id, value, onChange, options }) {
 }
 
 function Check() {
-  const [active, setActive] = useState(0);
   const navigate = useNavigate();
   useEffect(() => {
     const onMessage = (e) => {
@@ -469,22 +475,15 @@ function Check() {
     await skipCheck();
     navigate("/lexpace-hub/courses");
   };
-  const v = SCREENING_LANGS[active];
   return (
     <div className="lxh-frame">
       <div className="lecture-bar">
         <span className="lecture-title">LexPace check</span>
-        <div className="lang-switch" role="group" aria-label="Language">
-          {SCREENING_LANGS.map((l, i) => (
-            <button key={l.src} type="button" lang={l.lang} aria-pressed={i === active}
-              className={i === active ? "is-on" : ""} onClick={() => setActive(i)}>{l.label}</button>
-          ))}
-        </div>
         <button type="button" className="bb-btn bb-btn-secondary lecture-bar-end" onClick={leave}>
           Go to my courses <Icon name="back" size={16} className="icon-flip" />
         </button>
       </div>
-      <iframe key={v.src} className="lexpace-frame" src={v.src} title="LexPace check" />
+      <iframe className="lexpace-frame" src={SCREENING_SRC} title="LexPace check" />
     </div>
   );
 }

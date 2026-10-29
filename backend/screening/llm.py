@@ -1,4 +1,4 @@
-"""Thin async wrapper around the Claude API. Backend only: the key never reaches the browser.
+"""Thin async wrapper around the Claude or Gemini API. Backend only: the key never reaches the browser.
 
 Every call asks for JSON that matches a schema (structured outputs), then the caller
 validates the content again in Python. Any failure raises LLMError, and the caller
@@ -10,6 +10,7 @@ import logging
 from typing import Any
 
 import anthropic
+import httpx
 
 from . import config
 
@@ -46,6 +47,8 @@ async def generate_json(system: str, prompt: str, schema: dict, *, effort: str =
     global last_error
     if not enabled():
         raise LLMError("LLM not configured")
+    if config.LLM_PROVIDER == "gemini":
+        return await _gemini_json(system, prompt, schema, effort=effort, max_tokens=max_tokens)
     kwargs: dict[str, Any] = dict(
         model=config.LLM_MODEL,
         max_tokens=max_tokens,
@@ -93,3 +96,78 @@ async def generate_json(system: str, prompt: str, schema: dict, *, effort: str =
         raise LLMError(last_error)
     last_error = None
     return data
+
+
+# ---------------------------------------------------------------- Gemini (Google AI Studio key)
+
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+_http: httpx.AsyncClient | None = None
+
+
+def _parse(text: str | None) -> dict[str, Any]:
+    global last_error
+    if not text:
+        last_error = "empty response"
+        raise LLMError(last_error)
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as e:
+        last_error = "invalid JSON"
+        raise LLMError(last_error) from e
+    if not isinstance(data, dict):
+        last_error = "JSON is not an object"
+        raise LLMError(last_error)
+    last_error = None
+    return data
+
+
+async def _gemini_json(system: str, prompt: str, schema: dict, *, effort: str, max_tokens: int) -> dict[str, Any]:
+    """Same contract as the Claude path: JSON matching `schema` (structured output), or LLMError."""
+    global _http, last_error
+    if _http is None:
+        _http = httpx.AsyncClient(timeout=config.LLM_TIMEOUT_S)
+    body = {
+        "systemInstruction": {"parts": [{"text": system}]},
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {"responseMimeType": "application/json", "responseJsonSchema": schema,
+                             "maxOutputTokens": max_tokens,
+                             "thinkingConfig": {"thinkingLevel": "low" if effort == "low" else "high"}},
+    }
+    models = [config.LLM_MODEL] + [m for m in config.GEMINI_FALLBACK_MODELS if m != config.LLM_MODEL]
+    for model in models:  # a rate-limited model hands the request to the next one
+        try:
+            r = await _http.post(GEMINI_URL.format(model=model), json=body,
+                                 headers={"x-goog-api-key": config.GEMINI_API_KEY})
+        except httpx.HTTPError as e:  # includes timeouts
+            last_error = "connection error or timeout"
+            raise LLMError(last_error) from e
+        if r.status_code != 429:
+            break
+        log.info("gemini model %s rate limited, trying the next one", model)
+    if r.status_code in (401, 403):
+        last_error = "authentication failed"
+        raise LLMError(last_error)
+    if r.status_code == 429:
+        last_error = "rate limited"
+        raise LLMError(last_error)
+    if r.status_code == 400:
+        last_error = f"bad request: {r.text[:200]}"
+        raise LLMError(last_error)
+    if r.status_code != 200:
+        last_error = f"API error {r.status_code}"
+        raise LLMError(last_error)
+    data = r.json()
+    if (data.get("promptFeedback") or {}).get("blockReason"):
+        last_error = "request declined"
+        raise LLMError(last_error)
+    cand = (data.get("candidates") or [{}])[0]
+    finish = cand.get("finishReason")
+    if finish == "MAX_TOKENS":
+        last_error = "output truncated"
+        raise LLMError(last_error)
+    if finish not in (None, "STOP"):
+        last_error = "request declined"
+        raise LLMError(last_error)
+    parts = (cand.get("content") or {}).get("parts") or []
+    return _parse("".join(p.get("text", "") for p in parts if not p.get("thought")))
+

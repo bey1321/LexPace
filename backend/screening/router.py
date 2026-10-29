@@ -136,7 +136,7 @@ def create_router(on_result: Callable[[dict], None] | None = None) -> APIRouter:
                 except Exception as e:  # timeout or unexpected failure: keep going without a score
                     s.writing_eval = {"status": "not_scored", "reason": f"evaluation failed: {type(e).__name__}"}
             vector = features.extract(s)
-            result = classifier.classify(vector)
+            result = classifier.classify(vector, session=s)
             s.result = {"features": vector, "classification": result}
             s.result["saved_as"] = store.save(s)
             if on_result:
