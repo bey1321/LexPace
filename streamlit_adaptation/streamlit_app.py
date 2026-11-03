@@ -17,6 +17,9 @@ st.markdown(
     <style>
       .block-container {padding: 0 !important; max-width: 100% !important;}
       header, footer, #MainMenu {visibility: hidden; height: 0;}
+      /* Make the lesson fill the browser window so its floating
+         "Stop voice" bar (pinned to the bottom) is on screen. */
+      iframe {height: calc(100vh - 8px) !important; display: block;}
     </style>
     """,
     unsafe_allow_html=True,

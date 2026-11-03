@@ -182,6 +182,7 @@ body.wg-line #ruler{display:block}
 /* dock + settings */
 #dock{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 32px);z-index:35}
 #dock button{box-shadow:0 4px 14px rgba(0,0,0,.2)}
+html.embedded #dock{bottom:72px}
 #panel{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:84px;width:min(380px,calc(100% - 32px));max-height:calc(100vh - 160px);overflow:auto;background:var(--paper);border:1px solid var(--rule);border-radius:14px;box-shadow:0 10px 32px rgba(0,0,0,.28);padding:16px 18px 18px;z-index:36;display:flex;flex-direction:column;gap:14px;font-size:17px;line-height:1.5;word-spacing:0;letter-spacing:0;font-family:var(--f-body)}
 #panel h3{margin:0;font-size:19px}
 #panel .set{display:flex;flex-direction:column;gap:6px}
@@ -596,6 +597,11 @@ const TRX=new RegExp('\\b('+FORMS.map(x=>x[0]).sort((a,b)=>b.length-a.length).jo
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
 function btn(txt,cls,fn){const b=el('button',cls||'');b.type='button';b.textContent=txt;if(fn)b.onclick=fn;return b;}
+/* read button that turns into "Stop reading" while the voice is speaking (see syncReadBtns) */
+function rbtn(txt,cls,fn){const b=btn(txt,((cls||'')+' rdbtn').trim(),()=>{if(busy())stopSpeech();else fn();});b.dataset.lbl=txt;b.dataset.cls=cls||'';return b;}
+function syncReadBtns(on){document.querySelectorAll('.rdbtn').forEach(x=>{x.textContent=on?'■ Stop reading':x.dataset.lbl;x.classList.toggle('stop',on);if(x.dataset.cls)x.classList.toggle(x.dataset.cls,!on);});
+  document.querySelectorAll('.rdres').forEach(x=>x.hidden=on);}
+if(window.self!==window.top)document.documentElement.classList.add('embedded');
 
 /* ---------- settings ---------- */
 const FONTS={lexend:['Lexend','"Lexend",system-ui,sans-serif'],atkinson:['Atkinson','"Atkinson Hyperlegible",system-ui,sans-serif'],verdana:['Verdana','Verdana,Geneva,sans-serif'],arial:['Arial','Arial,Helvetica,sans-serif']};
@@ -911,7 +917,7 @@ function renderBlock(b,ctx){
   if(b.write)return writeTask(b.write);}
 function buildSec(c,i){const f=CUR.f;const ctx={f,seen:new Set()};const s=el('section','sec');s.id=c.id;
   const sh=el('div','sh');const h2=el('h2','rd');h2.textContent=c.title;wrapWords(h2);sh.appendChild(h2);
-  if(f.reader)sh.appendChild(btn(f.auto?'▶ Read this part to me':'▶ Listen',f.auto?'prime':'',()=>rdPlay(i,0,true)));s.appendChild(sh);
+  if(f.reader)sh.appendChild(rbtn(f.auto?'▶ Read this part to me':'▶ Listen',f.auto?'prime':'',()=>rdPlay(i,0,true)));s.appendChild(sh);
   const terms=(f.before||f.preview||f.bank)?termsIn(c):[];
   if(f.before)s.appendChild(beforeBox(c,terms));
   if(f.preview){const p=previewBox(terms);if(p)s.appendChild(p);}
@@ -949,8 +955,8 @@ function tabs(){const box=document.getElementById('ptabs');box.innerHTML='';psel
 function banner(){const b=document.getElementById('foryou');b.innerHTML='';b.appendChild(el('p','',CUR.text));
   if(CUR.on.length){const ch=el('div','chips');CUR.on.forEach(t=>ch.appendChild(el('span','chip',esc(t))));b.appendChild(ch);}
   if(CUR.f.math){const r=el('div','row');r.appendChild(btn('🧮 Open the formula card and calculator','prime',()=>{mtools.hidden=false;panel.hidden=true;drawDock();}));b.appendChild(r);}
-  if(CUR.f.reader){const r=el('div','row');r.appendChild(btn(CUR.f.auto?'▶ Read the lesson to me':'▶ Read to me','prime',()=>rdPlay(SECNOW,0,false)));
-    const p=store.get(posKey());if(p&&SECS[p.k])r.appendChild(btn('↺ Resume where I stopped','',()=>rdPlay(p.k,p.j,false)));b.appendChild(r);}}
+  if(CUR.f.reader){const r=el('div','row');r.appendChild(rbtn(CUR.f.auto?'▶ Read the lesson to me':'▶ Read to me','prime',()=>rdPlay(SECNOW,0,false)));
+    const p=store.get(posKey());if(p&&SECS[p.k])r.appendChild(btn('↺ Resume where I stopped','rdres',()=>rdPlay(p.k,p.j,false)));b.appendChild(r);}}
 function choose(id){CUR=PROF.find(p=>p.id===id)||PROF[0];store.set('pl2-prof',CUR.id);if(!CUR.f.math)mtools.hidden=true;
   SET.len=CUR.f.short?'short':'normal';applySet();drawPanel();psel.value=CUR.id;
   document.querySelectorAll('.ptab').forEach(b=>b.setAttribute('aria-selected',b.dataset.p===CUR.id));colors();build();banner();drawDock();
@@ -958,7 +964,7 @@ function choose(id){CUR=PROF.find(p=>p.id===id)||PROF[0];store.set('pl2-prof',CU
 
 /* ---------- dock + settings ---------- */
 const dock=document.getElementById('dock'),panel=document.getElementById('panel'),mtools=document.getElementById('mtools');let lastBusy=null;
-function drawDock(){dock.innerHTML='';const b=busy();lastBusy=b;
+function drawDock(){dock.innerHTML='';const b=busy();lastBusy=b;syncReadBtns(b);
   if(b)dock.appendChild(btn('■ Stop voice','stop',()=>stopSpeech()));
   else if(CUR.f.reader){dock.appendChild(btn('▶ Read to me','prime',()=>rdPlay(SECNOW,0,false)));
     const p=store.get(posKey());if(p&&SECS[p.k])dock.appendChild(btn('↺ Resume','',()=>rdPlay(p.k,p.j,false)));}
