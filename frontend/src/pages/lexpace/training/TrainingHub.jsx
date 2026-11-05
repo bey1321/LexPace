@@ -1,13 +1,11 @@
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 import Icon from "../../../components/Icon.jsx";
 import NumberSense from "./numbersense/NumberSense.jsx";
-import ReadingFluency from "./readingfluency/ReadingFluency.jsx";
+import ReadingPractice from "./readingpractice/ReadingPractice.jsx";
 import WritingHub from "./writing/WritingHub.jsx";
 
 // Replaces the old Training tile's content (which opened the separate RAP reading app).
-// This tile now opens the three training modules from the Training Programs spec, built one
-// at a time. Number Sense Practice is live; Reading Fluency and Writing are placeholders
-// until their own sessions.
+// This tile now opens the training modules from the Training Programs spec.
 
 const MODULES = [
   { to: "numbersense", icon: "pulse", label: "Number Sense Practice", ready: true },
@@ -49,7 +47,7 @@ export default function TrainingHub() {
     <Routes>
       <Route index element={<Hub />} />
       <Route path="numbersense" element={<NumberSense />} />
-      <Route path="reading" element={<ReadingFluency />} />
+      <Route path="reading" element={<ReadingPractice />} />
       <Route path="writing/*" element={<WritingHub />} />
       <Route path="*" element={<Navigate to="." replace />} />
     </Routes>

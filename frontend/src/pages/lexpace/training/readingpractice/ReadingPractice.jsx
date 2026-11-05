@@ -1,19 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import * as CFG from "./config.js";
 import * as E from "./engine.js";
 import { BASELINE, BASELINE_EXTRA, PRACTICE, TRAINING, TRAINING_RESERVE } from "./bank.js";
-import "./readingfluency.css";
+import "./readingpractice.css";
 
-// Reading Fluency Practice - phase 1, same scope decisions as Number Sense Practice:
-//   - in-memory only, no real identity/cross-session persistence yet;
-//   - no Fix B (LMS "seen/not seen" tagging) - the app has no activity log to read (checked
-//     in the prior planning session), and this was explicitly deferred rather than mocked;
-//   - sentence bank is the prototype's placeholder data (bank.js), pending flow 3a;
-//   - presenter panel hidden unless ?staff=1.
-// What IS built to spec: the rAF/high-res-clock erasure timing, the exact staircase rule,
-// trial cancellation (focus/visibility/resize/inactivity/freeze), and session 0 kept as a
-// genuinely separate stop from session 1 (not auto-chained like the demo prototype).
+// Reading Practice - a standalone fork of Reading Fluency Practice (same folder structure,
+// copied on purpose rather than shared) so the original stays exactly as built to the research
+// spec, while this copy can evolve with product/UX changes that the spec didn't call for:
+//   - the "+" fixation point is replaced with an empty box + a start marker at its left edge,
+//     so it's obvious where the sentence will appear while still pinning the eye to one exact
+//     spot (see startbox/startmark in the CSS and ReadyScreen below);
+//   - "Back to Training menu" (header) and "End session" (footer) are available at any time,
+//     with a confirm step if something is actively in progress;
+//   - Pause keeps its original meaning (stops the current sentence, which then doesn't count -
+//     this is deliberate: it keeps the timing data clean rather than trying to freeze and
+//     resume the erasure animation mid-flight, which is more complex for little real benefit).
+// Everything else (timing engine, staircase, cancellation rules, two separate sessions) is
+// identical to the original - see readingfluency/ReadingFluency.jsx for that version's own
+// notes. Keep both in sync manually if the underlying protocol logic ever changes.
 
 const GROUPS = {
   0: [{ key: "practice0", phase: "practice", bank: PRACTICE, extra: [], erase: false },
@@ -33,11 +38,13 @@ function initial() {
     baselineTrials: [], done: 0, paused: false,
     log: [], logN: { practice: 0, baseline: 0, training: 0 },
     lastResult: null,
+    history: [], reviewIdx: null,
   };
 }
 
-export default function ReadingFluency() {
+export default function ReadingPractice() {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const staffMode = params.get("staff") === "1";
   const [s, setS] = useState(initial);
   const group = GROUPS[s.session][s.groupIdx];
@@ -51,7 +58,13 @@ export default function ReadingFluency() {
 
   function startGroup(session, groupIdx) {
     const g = GROUPS[session][groupIdx];
-    setS((p) => ({ ...p, session, groupIdx, screen: "group-intro", queue: g.bank.slice(), extraQueue: g.extra.slice(), done: 0, streak: g.phase === "training" ? 0 : p.streak }));
+    // Session 1's practice warm-up skips its own intro screen and goes straight into the first
+    // practice sentence - the student already saw the full "how this works" explanation in
+    // Session 0, so a second click-through screen saying the same thing again is just friction.
+    // Session 0's practice intro and Session 1's training intro (new content: the text now
+    // erases) both still show, since those aren't repeats.
+    const skipIntro = session === 1 && groupIdx === 0;
+    setS((p) => ({ ...p, session, groupIdx, screen: skipIntro ? "ready" : "group-intro", cur: null, queue: g.bank.slice(), extraQueue: g.extra.slice(), done: 0, streak: g.phase === "training" ? 0 : p.streak }));
   }
 
   function beginGroupTrials() { setS((p) => ({ ...p, screen: "ready" })); }
@@ -77,6 +90,28 @@ export default function ReadingFluency() {
   function goToSession1() { startGroup(1, 0); }
   function restart() { setS(initial()); }
 
+  // ---------------------------------------------------------------- leaving: back to menu / end session
+  // Available at any time, per the product decision to not trap a student in a timed exercise.
+  // Both currently lead to the same place, since there's no saved progress yet to distinguish
+  // "step away" from "stop for good" - once persistence exists, "back to menu" could preserve
+  // where you were and "end session" could discard it.
+
+  function midTrial() { return ["read", "wait", "q"].includes(s.screen); }
+  function backToMenu() {
+    if (midTrial() && !window.confirm("Leave now? This sentence won't be saved.")) return;
+    navigate("..");
+  }
+  function endSessionNow() {
+    const msg = midTrial() ? "Skip the rest of this session and go straight to the end screen? This sentence won't be saved." : "Skip the rest of this session and go straight to the end screen?";
+    if (!window.confirm(msg)) return;
+    if (s.session === 0) {
+      const pace = E.computeStartingPace(s.baselineTrials, CFG);
+      setS((p) => ({ ...p, rate: pace ? pace.rate : p.rate, screen: "session0-end", paused: false }));
+      return;
+    }
+    setS((p) => ({ ...p, screen: "session-end", paused: false }));
+  }
+
   // ---------------------------------------------------------------- one trial
 
   function nextTrial() {
@@ -100,6 +135,13 @@ export default function ReadingFluency() {
     if (s.screen !== "ready" || s.paused) return;
     setS((p) => ({ ...p, screen: "wait" }));
     waitTimerRef.current = setTimeout(() => setS((p) => ({ ...p, screen: "read" })), CFG.START_DELAY_MS);
+  }
+
+  // Skip the sentence that's queued up but hasn't started yet - it's simply dropped (not counted
+  // either way) and the next one is pulled in, same as not reading it at all.
+  function skipTrial() {
+    if (s.screen !== "ready" || s.paused) return;
+    setS((p) => ({ ...p, cur: null, trial: null }));
   }
 
   function onReadComplete({ reason, rt, charsErased, totalChars }) {
@@ -152,12 +194,31 @@ export default function ReadingFluency() {
       note = sped ? "3 correct in a row. The text now disappears 2 ms per letter faster." : slowed ? "The text now disappears 2 ms per letter slower." : (streak === 1 ? "Two more" : "One more") + " correct in a row and the text speeds up.";
     }
 
+    const result = { ok, note, dotsFilled: group.phase === "training" ? dotsFilled : null };
     setS((p) => {
       const baselineTrials = group.phase === "baseline" ? [...p.baselineTrials, trial] : p.baselineTrials;
       return { ...p, trial, rate, streak, baselineTrials, done: p.done + 1, screen: "fb", cur: null,
-        lastResult: { ok, note, dotsFilled: group.phase === "training" ? dotsFilled : null } };
+        lastResult: result, history: [...p.history, result] };
     });
     logTrial(trial, trial.end, ok);
+  }
+
+  // Previous/Next move through already-answered sentences for review (read-only, and never
+  // during a running trial - this only appears on the "ready" and "fb" screens, between trials,
+  // so it can't interrupt the timed reading or comprehension-question stages).
+  function goPrev() {
+    setS((p) => {
+      const at = p.reviewIdx ?? p.history.length;
+      if (at <= 0) return p;
+      return { ...p, reviewIdx: at - 1 };
+    });
+  }
+  function goNext() {
+    setS((p) => {
+      if (p.reviewIdx == null) return p;
+      if (p.reviewIdx + 1 < p.history.length) return { ...p, reviewIdx: p.reviewIdx + 1 };
+      return { ...p, reviewIdx: null };
+    });
   }
 
   function logTrial(trial, endReason, ok) {
@@ -203,7 +264,7 @@ export default function ReadingFluency() {
 
   useEffect(() => {
     function onKey(e) {
-      if (e.repeat) return;
+      if (e.repeat || s.reviewIdx != null) return;
       const space = e.code === "Space";
       if (space) e.preventDefault();
       if (s.screen === "read" && space) { requestEndRef.current?.(); return; }
@@ -230,7 +291,8 @@ export default function ReadingFluency() {
     <div className="rf">
       <div className="rf-panel">
         <div className="rf-shead">
-          <b>Reading fluency practice · Session {s.session === 0 ? "0" : "1"} of 24</b>
+          <button type="button" className="rf-btn rf-o rf-sm" onClick={backToMenu}>← Training menu</button>
+          <b>Reading practice · Session {s.session === 0 ? "0" : "1"} of 24</b>
           <span className={"rf-tag" + (group.phase === "training" ? " is-f" : "")}>{phaseName(group.phase)}</span>
           <span className="rf-tag">{s.rate == null ? "Pace: not set yet" : `Pace: ${s.rate} ms per letter`}</span>
           <span className="rf-sp" />
@@ -238,26 +300,41 @@ export default function ReadingFluency() {
         </div>
         <div className="rf-progress"><i style={{ width: Math.min(100, (s.done / tot) * 100) + "%" }} /></div>
         <div className="rf-stage">
-          {s.screen === "group-intro" && <GroupIntro session={s.session} group={group} rate={s.rate} onStart={beginGroupTrials} />}
-          {(s.screen === "ready" || s.screen === "wait") && s.cur && <ReadyScreen screen={s.screen} cur={s.cur} group={group} onReady={pressReady} />}
-          {s.screen === "read" && s.cur && (
+          {s.reviewIdx != null && <Feedback result={s.history[s.reviewIdx]} readOnly />}
+          {s.reviewIdx == null && s.screen === "group-intro" && <GroupIntro session={s.session} group={group} rate={s.rate} onStart={beginGroupTrials} />}
+          {s.reviewIdx == null && (s.screen === "ready" || s.screen === "wait") && s.cur && <ReadyScreen screen={s.screen} cur={s.cur} group={group} onReady={pressReady} />}
+          {s.reviewIdx == null && s.screen === "read" && s.cur && (
             <>
               <p className="rf-lab">{group.erase ? "Read silently. The text disappears from the left." : "Read silently at your normal pace. The text stays on screen."}</p>
               <Sentence text={s.cur.s} erase={group.erase} rate={s.rate} onComplete={onReadComplete} onFreeze={onFreeze} requestEndRef={requestEndRef} />
               <p className="rf-msg">Press <span className="rf-key">SPACE</span> as soon as you finish reading</p>
             </>
           )}
-          {s.screen === "q" && s.cur && <Question cur={s.cur} opts={s.trial.opts} onAnswer={answer} />}
-          {s.screen === "fb" && s.lastResult && <Feedback result={s.lastResult} onContinue={continueAfterFeedback} />}
-          {s.screen === "cancelled" && <Cancelled reason={s.trial?.end} onContinue={resumeAfterCancel} />}
-          {s.screen === "not-enough" && <NotEnough valid={E.computeStartingPace(s.baselineTrials, CFG)?.validCount || 0} onRestart={restart} />}
-          {s.screen === "session0-end" && <Session0End rate={s.rate} onContinue={goToSession1} />}
-          {s.screen === "session-end" && <SessionEnd rate={s.rate} onRestart={restart} />}
+          {s.reviewIdx == null && s.screen === "q" && s.cur && <Question cur={s.cur} opts={s.trial.opts} onAnswer={answer} />}
+          {s.reviewIdx == null && s.screen === "fb" && s.lastResult && <Feedback result={s.lastResult} />}
+          {s.reviewIdx == null && s.screen === "cancelled" && <Cancelled reason={s.trial?.end} onContinue={resumeAfterCancel} />}
+          {s.reviewIdx == null && s.screen === "not-enough" && <NotEnough valid={E.computeStartingPace(s.baselineTrials, CFG)?.validCount || 0} onRestart={restart} />}
+          {s.reviewIdx == null && s.screen === "session0-end" && <Session0End rate={s.rate} onContinue={goToSession1} />}
+          {s.reviewIdx == null && s.screen === "session-end" && <SessionEnd rate={s.rate} onRestart={restart} />}
         </div>
+        {!s.paused && (s.screen === "ready" || s.screen === "fb") && (
+          <div className="rf-nav1">
+            <button type="button" className="rf-btn rf-o rf-sm" disabled={(s.reviewIdx ?? s.history.length) <= 0} onClick={goPrev}>◀ Previous</button>
+            <span className="rf-stepper">Sentence {(s.reviewIdx ?? s.history.length) + 1}{s.reviewIdx != null && " (review)"}</span>
+            <button type="button" className="rf-btn rf-sm"
+              onClick={s.reviewIdx != null ? goNext : s.screen === "fb" ? continueAfterFeedback : skipTrial}>Next ▶</button>
+          </div>
+        )}
         <div className="rf-sfoot">
           <span>Sentences are placeholder course material until the before-term preparation flow is built.</span>
-          <span className="rf-sp" />
-          <button type="button" className="rf-btn rf-o rf-sm" onClick={togglePause}>{s.paused ? "Resume" : "Pause"}</button>
+          {!(s.session === 0 && s.groupIdx === 0 && s.screen === "group-intro") && (
+            <div className="rf-sfoot-actions">
+              <span className="rf-sfoot-lab">Session</span>
+              <button type="button" className="rf-btn rf-o rf-sm" onClick={togglePause}>{s.paused ? "Resume" : "Pause"}</button>
+              <button type="button" className="rf-btn rf-o rf-sm" onClick={() => { if (!midTrial() || window.confirm("Restart from the beginning? This sentence won't be saved.")) restart(); }}>Restart</button>
+              <button type="button" className="rf-btn rf-o rf-sm" onClick={endSessionNow}>Skip to end</button>
+            </div>
+          )}
         </div>
       </div>
       {staffMode && <StaffPanel s={s} group={group} />}
@@ -311,7 +388,7 @@ function Sentence({ text, erase, rate, onComplete, onFreeze, requestEndRef }) {
   }, [text, erase, rate]);
 
   return (
-    <div className="rf-sentence" ref={containerRef} style={{ visibility: "hidden" }}>
+    <div className="rf-sentence rf-startbox" ref={containerRef} style={{ visibility: "hidden" }}>
       {chars.map((ch, i) => <span key={i}>{ch}</span>)}
     </div>
   );
@@ -327,7 +404,7 @@ function GroupIntro({ session, group, rate, onStart }) {
         <h1>Warm up with 2 practice sentences</h1>
         <ol>
           <li>Rest one hand on <span className="rf-key">SPACE</span>. You will not need the mouse.</li>
-          <li>A <b>+</b> marks exactly where the sentence will start. Look at it and press <span className="rf-key">SPACE</span> when you are ready.</li>
+          <li>An empty box shows where the sentence will appear, with a <b>+</b> marking exactly where it starts. Look at it and press <span className="rf-key">SPACE</span> when you are ready.</li>
           <li>Half a second later the sentence appears. Read it silently and press <span className="rf-key">SPACE</span> as soon as you finish.</li>
           <li>Answer with keys <span className="rf-key">1</span> to <span className="rf-key">4</span>, then press <span className="rf-key">SPACE</span> to continue.</li>
         </ol>
@@ -341,7 +418,7 @@ function GroupIntro({ session, group, rate, onStart }) {
       <div className="rf-intro">
         <p className="rf-lab">Session 1 · Before you start</p>
         <h1>Warm up with 2 practice sentences</h1>
-        <p>Same as before: look at the <b>+</b>, press <span className="rf-key">SPACE</span>, read, press <span className="rf-key">SPACE</span>.</p>
+        <p>Same as before: look at the box, press <span className="rf-key">SPACE</span>, read, press <span className="rf-key">SPACE</span>.</p>
         <p className="rf-msg">Practice sentences never count.</p>
         <div><button type="button" className="rf-btn" onClick={onStart}>Start practice</button></div>
       </div>
@@ -352,7 +429,7 @@ function GroupIntro({ session, group, rate, onStart }) {
       <div className="rf-intro">
         <p className="rf-lab">Part 1 of 2</p>
         <h1>Find your starting pace</h1>
-        <p>Read 12 sentences at your normal pace. Each one starts the same way: look at the <b>+</b>, press <span className="rf-key">SPACE</span>, read, press <span className="rf-key">SPACE</span>. The text stays on screen. There is no time limit and no score.</p>
+        <p>Read 12 sentences at your normal pace. Each one starts the same way: look at the box, press <span className="rf-key">SPACE</span>, read, press <span className="rf-key">SPACE</span>. The text stays on screen. There is no time limit and no score.</p>
         <p className="rf-msg">The tool measures your average time per letter on sentences you answer correctly. Training then starts from that pace.</p>
         <div><button type="button" className="rf-btn" onClick={onStart}>Start part 1</button></div>
       </div>
@@ -373,10 +450,10 @@ function ReadyScreen({ screen, cur, group, onReady }) {
   return (
     <>
       <p className="rf-lab">{group.erase ? "Read silently. The text disappears from the left." : "Read silently at your normal pace. The text stays on screen."}</p>
-      <div className="rf-sentence">+</div>
+      <div className="rf-sentence rf-startbox is-empty" aria-hidden="true"><span className="rf-startmark">+</span></div>
       {screen === "ready" ? (
         <>
-          <p className="rf-msg">Look at the <b>+</b>. Press <span className="rf-key">SPACE</span> when you are ready.</p>
+          <p className="rf-msg">The sentence will appear in this box, starting where the <b>+</b> is. Press <span className="rf-key">SPACE</span> when you are ready.</p>
           <button type="button" className="rf-btn rf-o" onClick={onReady}>Ready</button>
         </>
       ) : <p className="rf-msg">&nbsp;</p>}
@@ -398,11 +475,12 @@ function Question({ cur, opts, onAnswer }) {
   );
 }
 
-function Feedback({ result, onContinue }) {
+function Feedback({ result, readOnly }) {
   const { ok, note, dotsFilled } = result;
   const icon = ok ? "Correct" : "Not correct";
   return (
     <div className="rf-q">
+      {readOnly && <p className="rf-lab">Reviewing a previous sentence (read-only)</p>}
       <div className="rf-fb">
         <span className="rf-res">{icon}</span>
         {dotsFilled != null && (
@@ -412,7 +490,7 @@ function Feedback({ result, onContinue }) {
         )}
         <span className="rf-msg">{note}</span>
       </div>
-      <div><button type="button" className="rf-btn" onClick={onContinue}>Continue (Space)</button></div>
+      <p className="rf-msg">Press Next below (or Space) to continue.</p>
     </div>
   );
 }
@@ -440,6 +518,15 @@ function NotEnough({ valid, onRestart }) {
 }
 
 function Session0End({ rate, onContinue }) {
+  if (rate == null) {
+    return (
+      <div className="rf-intro">
+        <p className="rf-lab">Session 0 ended early</p>
+        <h1>No starting pace yet</h1>
+        <p className="rf-msg">Not enough sentences were answered to calculate a starting pace, so Session 1 (which needs that pace) can't begin yet. Restart to try the full Session 0 again.</p>
+      </div>
+    );
+  }
   return (
     <div className="rf-intro">
       <p className="rf-lab">Session 0 complete</p>

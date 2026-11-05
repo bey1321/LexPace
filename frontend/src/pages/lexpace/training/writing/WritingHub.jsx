@@ -1,4 +1,4 @@
-import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import Spelling from "./spelling/Spelling.jsx";
 import SentenceCombining from "./sentencecombining/SentenceCombining.jsx";
 import SRSD from "./srsd/SRSD.jsx";
@@ -18,8 +18,10 @@ const CARDS = [
 ];
 
 function Home() {
+  const navigate = useNavigate();
   return (
     <div className="lxh-body">
+      <button type="button" className="wp-btn wp-o wp-sm" onClick={() => navigate("..")} style={{ marginBottom: 16 }}>← Training menu</button>
       <p className="lxh-intro-sm">Three trainings, open from the start. Open any of them, in any order, and switch whenever you like. Nothing is recommended or locked, and your results are private.</p>
       <div className="wp-cards">
         {CARDS.map((c) => (

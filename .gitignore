@@ -1,5 +1,6 @@
 node_modules/
 frontend/dist/
+frontend/dist-standalone/
 __pycache__/
 *.pyc
 .env

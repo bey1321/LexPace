@@ -12,7 +12,6 @@
 .ns-shead { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--ns-line); flex-wrap: wrap; }
 .ns-shead b { font-size: 15px; }
 .ns-tag { font-size: 12px; border: 1px solid var(--ns-ink); border-radius: 12px; padding: 2px 10px; white-space: nowrap; }
-.ns-sp { flex: 1; }
 .ns-count { font-size: 14px; font-variant-numeric: tabular-nums; }
 .ns-progress { height: 4px; background: #e5e5e5; }
 .ns-progress i { display: block; height: 4px; width: 0; background: var(--ns-ink); transition: width .2s; }
@@ -24,7 +23,11 @@
 .ns-key { display: inline-flex; border: 1px solid var(--ns-ink); border-bottom-width: 3px; border-radius: 4px; padding: 1px 9px; font-size: 12px; font-weight: 700; line-height: 1.5; }
 .ns-btn { background: var(--ns-ink); color: #fff; border: 1px solid var(--ns-ink); border-radius: 4px; padding: 11px 22px; font-size: 15px; font-weight: 600; cursor: pointer; }
 .ns-btn.ns-o { background: #fff; color: var(--ns-ink); }
+.ns-btn.ns-sm { padding: 5px 12px; font-size: 12px; }
 .ns-btn:disabled { opacity: .5; cursor: default; }
+.ns-sfoot-lab { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #9a9a9a; }
+.ns-nav1 { display: flex; align-items: center; justify-content: center; gap: 18px; padding: 12px 16px; background: var(--ns-soft); border-top: 1px solid var(--ns-line); flex-wrap: wrap; }
+.ns-stepper { font-size: 13px; color: var(--ns-muted); }
 .ns-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .ns-choice { font-family: var(--ns-mono); font-size: 26px; border: 1px solid #9a9a9a; border-radius: 6px; background: #fff; color: var(--ns-ink); padding: 14px 24px; min-width: 170px; cursor: pointer; }
 .ns-choice:hover { border-color: var(--ns-ink); }
@@ -37,6 +40,7 @@
 /* number line */
 .ns-nl { width: min(640px, 100%); padding: 34px 18px 30px; position: relative; user-select: none; touch-action: none; }
 .ns-nl .ns-track { position: relative; height: 44px; cursor: crosshair; }
+.ns-nl .ns-track:focus { outline: none; box-shadow: 0 0 0 2px var(--ns-ink); border-radius: 2px; }
 .ns-nl .ns-axis { position: absolute; left: 0; right: 0; top: 21px; height: 2px; background: var(--ns-ink); }
 .ns-nl .ns-tick { position: absolute; top: 12px; width: 2px; height: 20px; background: var(--ns-ink); transform: translateX(-1px); }
 .ns-nl .ns-tl { position: absolute; top: 46px; font-size: 13px; font-family: var(--ns-mono); transform: translateX(-50%); white-space: nowrap; }
@@ -54,7 +58,9 @@
 .ns-pbar i { position: absolute; top: 0; bottom: 0; background: var(--ns-ink); }
 .ns-pbar.is-neg::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #7a7a7a; }
 .ns-res { font-weight: 700; display: flex; align-items: center; gap: 8px; justify-content: center; }
-.ns-sfoot { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--ns-line); font-size: 13px; color: var(--ns-muted); flex-wrap: wrap; }
+.ns-sfoot { display: flex; align-items: center; gap: 8px 16px; padding: 10px 16px; border-top: 1px solid var(--ns-line); font-size: 13px; color: var(--ns-muted); flex-wrap: wrap; justify-content: space-between; }
+.ns-sfoot > span:first-child { flex: 1 1 240px; min-width: 180px; }
+.ns-sfoot-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .ns-repair { border: 2px solid var(--ns-ink); border-radius: 6px; padding: 10px 14px; max-width: 640px; text-align: left; }
 
 /* staff-only presenter panel (feature-flagged, never shown to students by default) */

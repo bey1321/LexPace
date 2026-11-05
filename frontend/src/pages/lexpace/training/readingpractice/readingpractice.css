@@ -1,5 +1,9 @@
-/* Reading Fluency Practice: the prototype's own look, scoped under .rf- (see numbersense.css
-   for why - same reasoning: "do not redesign the interface"). */
+/* Reading Practice: forked from Reading Fluency Practice's own look (see numbersense.css for
+   the ".rf-" scoping reasoning - "do not redesign the interface" applied to the original). This
+   fork intentionally diverges on one thing: the fixation box below. */
+.rf-startbox { border: 1px dashed var(--rf-muted); border-radius: 6px; padding: 10px 14px; box-sizing: border-box; }
+.rf-startbox.is-empty { display: flex; align-items: center; justify-content: flex-start; }
+.rf-startmark { font-family: var(--rf-mono); font-weight: 700; font-size: 1.1em; color: var(--rf-ink); }
 .rf {
   --rf-ink: #111111; --rf-muted: #5a5a5a; --rf-line: #d4d4d4; --rf-soft: #f3f3f3;
   --rf-mono: Consolas, "Liberation Mono", "Courier New", monospace;
@@ -10,7 +14,10 @@
 .rf-shead b { font-size: 15px; }
 .rf-tag { font-size: 12px; border: 1px solid var(--rf-ink); border-radius: 12px; padding: 2px 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .rf-tag.is-f { background: var(--rf-ink); color: #fff; }
-.rf-sp { flex: 1; }
+.rf-sp { flex: 1; } /* header-row spacer only - the footer's own spacing uses justify-content now */
+.rf-sfoot-lab { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #9a9a9a; }
+.rf-nav1 { display: flex; align-items: center; justify-content: center; gap: 18px; padding: 12px 16px; background: var(--rf-soft); border-top: 1px solid var(--rf-line); flex-wrap: wrap; }
+.rf-stepper { font-size: 13px; color: var(--rf-muted); }
 .rf-count { font-size: 14px; font-variant-numeric: tabular-nums; }
 .rf-progress { height: 4px; background: #e5e5e5; }
 .rf-progress i { display: block; height: 4px; width: 0; background: var(--rf-ink); transition: width .2s; }
@@ -40,7 +47,9 @@
 .rf-dots i { width: 11px; height: 11px; border: 1px solid var(--rf-ink); border-radius: 50%; display: inline-block; }
 .rf-dots i.is-d { background: var(--rf-ink); }
 .rf-msg { font-size: 14px; color: var(--rf-muted); margin: 0; }
-.rf-sfoot { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--rf-line); font-size: 13px; color: var(--rf-muted); flex-wrap: wrap; }
+.rf-sfoot { display: flex; align-items: center; gap: 8px 16px; padding: 10px 16px; border-top: 1px solid var(--rf-line); font-size: 13px; color: var(--rf-muted); flex-wrap: wrap; justify-content: space-between; }
+.rf-sfoot > span:first-child { flex: 1 1 240px; min-width: 180px; }
+.rf-sfoot-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 /* staff-only presenter panel */
 .rf-side { border: 1px dashed #9a9a9a; border-radius: 6px; padding: 16px; font-size: 13px; display: grid; gap: 12px; margin-top: 20px; }

@@ -30,7 +30,7 @@ export function countParts(r) { return PARTS.filter((p) => r[p.id]).length; }
 // refusal/output-check requirements in the spec are satisfied by the script itself having no
 // way to produce essay text at all.
 
-const STEP_TEXT = {
+export const STEP_TEXT = {
   s: "S means Suspend judgment: before deciding, list ideas for both sides.",
   t: "T means Take a side: decide which position your ideas support best.",
   o: "O means Organize ideas: choose your strongest reasons and one argument from the other side you can answer.",

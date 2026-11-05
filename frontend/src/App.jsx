@@ -7,6 +7,7 @@ import Tools from "./pages/Tools.jsx";
 import EmptyPage from "./pages/EmptyPage.jsx";
 import CoursePage from "./pages/CoursePage.jsx";
 import LexPace from "./pages/lexpace/LexPace.jsx";
+import TrainingStandalone from "./pages/standalone/TrainingStandalone.jsx";
 
 function Shell() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="signout" element={<EmptyPage title="Signed out" icon="signout" text="This is a demo, so there is nothing to sign out of. Pick any item on the left to continue." />} />
       </Route>
       <Route path="courses/:courseId/*" element={<CoursePage />} />
+      <Route path="training/*" element={<TrainingStandalone />} />
       <Route path="*" element={<Navigate to="/courses" replace />} />
     </Routes>
   );

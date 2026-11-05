@@ -1,0 +1,6 @@
+/* The standalone training entry point: no sidebar, no Blackboard chrome - just a plain page. */
+.st-shell { min-height: 100vh; background: var(--bb-page); }
+.st-body { max-width: 1100px; margin: 0 auto; padding: 40px 38px 60px; }
+.st-head { margin-bottom: 28px; }
+.st-head h1 { font-family: var(--bb-font-title); font-weight: 400; font-size: 34px; margin: 0 0 8px; color: var(--bb-ink); }
+.st-head p { margin: 0; color: var(--bb-muted); font-size: 17px; }

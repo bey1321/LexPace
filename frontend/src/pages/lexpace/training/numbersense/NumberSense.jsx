@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import * as E from "./engine.js";
 import * as CFG from "./config.js";
 import "./numbersense.css";
@@ -46,16 +46,37 @@ function initial() {
     courseShown: false, recentBugs: [], repairedAt: {}, pendingRepair: null,
     repairStep: 0,
     placementIndex: 0, placementFailAt: -1,
-    log: [], lastResult: null,
+    log: [], lastResult: null, paused: false,
+    history: [], reviewIdx: null,
   };
 }
 
 export default function NumberSense() {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const staffMode = params.get("staff") === "1";
   const [s, setS] = useState(initial);
   const shownAtRef = useRef(0);
   const logNRef = useRef(0);
+
+  function midItem() { return (s.stageView === "present" && s.item) || s.stageView === "repair" || s.stageView === "repair-feedback"; }
+  function backToMenu() {
+    if (midItem() && !window.confirm("Leave now? This item won't be saved.")) return;
+    navigate("..");
+  }
+  function togglePause() {
+    if (s.paused) { shownAtRef.current = performance.now(); setS((p) => ({ ...p, paused: false })); return; }
+    setS((p) => ({ ...p, paused: true }));
+  }
+  function restartNow() {
+    if (midItem() && !window.confirm("Restart from the beginning? This item won't be saved.")) return;
+    restart();
+  }
+  function endSessionNow() {
+    if (midItem() && !window.confirm("Skip the rest of this session and go straight to the end screen? This item won't be saved.")) return;
+    if (s.phase === "session") { setS((p) => ({ ...p, phase: "session-end", paused: false })); return; }
+    navigate("..");
+  }
 
   function log(skillName, taskLabel, ok, rt, note) {
     logNRef.current += 1;
@@ -160,9 +181,32 @@ export default function NumberSense() {
       if (same.length >= CFG.REPEAT_COUNT && !(repairedAt[bug] > n - CFG.REPEAT_WINDOW)) { pendingRepair = E.repairFor(bug, it); repairedAt = { ...repairedAt, [bug]: n }; }
     }
 
+    const result = { ok, bug, rt, youPos, moved, repairQueued: !!pendingRepair, item: it, mode };
     setS((p) => ({ ...p, skill: nextSkillState, stageView: "feedback", recentBugs, repairedAt, pendingRepair, repairStep: 0,
-      lastResult: { ok, bug, rt, youPos, moved, repairQueued: !!pendingRepair, item: it, mode } }));
+      lastResult: result, history: [...p.history, result] }));
   }
+
+  // Previous/Next move through already-answered items for review (read-only - the item was
+  // already marked by the adaptive engine, so revisiting it can't change your skill level);
+  // Next past the last reviewed item returns to wherever the live item/feedback screen is.
+  function goPrev() {
+    setS((p) => {
+      const at = p.reviewIdx ?? p.history.length;
+      if (at <= 0) return p;
+      return { ...p, reviewIdx: at - 1 };
+    });
+  }
+  function goNext() {
+    setS((p) => {
+      if (p.reviewIdx == null) return p;
+      if (p.reviewIdx + 1 < p.history.length) return { ...p, reviewIdx: p.reviewIdx + 1 };
+      return { ...p, reviewIdx: null };
+    });
+  }
+  // Skip the current, not-yet-answered item without scoring it - it's simply discarded and a new
+  // one is generated, same as not answering at all. This never touches skill/streak state, since
+  // nothing was actually answered.
+  function skipItem() { setS((p) => ({ ...p, item: null })); }
 
   function answerLine(pos) {
     if (s.stageView !== "present") return;
@@ -211,14 +255,13 @@ export default function NumberSense() {
     });
   }
 
-  function endSessionNow() { setS((p) => ({ ...p, phase: "session-end" })); }
   function restart() { logNRef.current = 0; setS(initial()); }
 
   // ---------------------------------------------------------------- keyboard
 
   useEffect(() => {
     function onKey(e) {
-      if (e.repeat) return;
+      if (e.repeat || s.paused || s.reviewIdx != null) return;
       if (e.code === "Space" && s.stageView === "feedback") { e.preventDefault(); continueAfterFeedback(); return; }
       if (e.code === "Space" && s.stageView === "repair-feedback") { e.preventDefault(); repairContinue(); return; }
       if (/^[1-4]$/.test(e.key) && s.stageView === "present" && s.item && s.item.kind !== "line") {
@@ -234,29 +277,55 @@ export default function NumberSense() {
   return (
     <div className="ns">
       <div className="ns-panel">
-        <Header s={s} />
+        <Header s={s} onBack={backToMenu} />
         <div className="ns-stage">
+          {s.paused ? (
+            <div className="ns-intro">
+              <p className="ns-lab">Paused</p>
+              <h1>Session paused</h1>
+              <p className="ns-msg">Nothing is running while paused. Press Resume to continue where you left off.</p>
+              <div><button type="button" className="ns-btn" onClick={togglePause}>Resume</button></div>
+            </div>
+          ) : <>
           {s.phase === "intro" && <Intro onStart={startPlacement} />}
           {s.phase === "placement" && s.item && s.stageView === "present" && (
             <ItemView item={s.item} mode="placement" onLine={answerLine} onChoice={answerChoice} />
           )}
           {s.phase === "placement-end" && <PlacementEnd skill={s.skill} onStart={startSession} />}
-          {s.phase === "session" && s.item && s.stageView === "present" && (
+          {s.phase === "session" && s.reviewIdx != null && (
+            <Feedback result={s.history[s.reviewIdx]} readOnly />
+          )}
+          {s.phase === "session" && s.reviewIdx == null && s.item && s.stageView === "present" && (
             <ItemView item={s.item} mode={s.mode} onLine={answerLine} onChoice={answerChoice} />
           )}
-          {s.phase === "session" && s.stageView === "feedback" && s.lastResult && (
-            <Feedback result={s.lastResult} onContinue={continueAfterFeedback} />
+          {s.phase === "session" && s.reviewIdx == null && s.stageView === "feedback" && s.lastResult && (
+            <Feedback result={s.lastResult} />
           )}
           {s.phase === "session" && (s.stageView === "repair" || s.stageView === "repair-feedback") && s.pendingRepair && (
             <Repair rep={s.pendingRepair} step={s.repairStep} stageView={s.stageView} lastResult={s.lastResult}
               onAnswer={repairAnswer} onContinue={repairContinue} />
           )}
           {s.phase === "session-end" && <SessionEnd skill={s.skill} onRestart={restart} />}
+          </>}
         </div>
+        {!s.paused && s.phase === "session" && (s.stageView === "present" || s.stageView === "feedback") && (
+          <div className="ns-nav1">
+            <button type="button" className="ns-btn ns-o ns-sm" disabled={(s.reviewIdx ?? s.history.length) <= 0} onClick={goPrev}>◀ Previous</button>
+            <span className="ns-stepper">Item {(s.reviewIdx ?? s.history.length) + 1}{s.reviewIdx != null && " (review)"}</span>
+            <button type="button" className="ns-btn ns-sm"
+              onClick={s.reviewIdx != null ? goNext : s.stageView === "feedback" ? continueAfterFeedback : skipItem}>Next ▶</button>
+          </div>
+        )}
         <div className="ns-sfoot">
           <span>No timer is shown. Answers are private.</span>
-          <span className="ns-sp" />
-          {s.phase === "session" && <button type="button" className="ns-btn ns-o" onClick={endSessionNow}>End session now (demo)</button>}
+          {s.phase !== "intro" && (
+            <div className="ns-sfoot-actions">
+              <span className="ns-sfoot-lab">Session</span>
+              <button type="button" className="ns-btn ns-o ns-sm" onClick={togglePause}>{s.paused ? "Resume" : "Pause"}</button>
+              <button type="button" className="ns-btn ns-o ns-sm" onClick={restartNow}>Restart</button>
+              <button type="button" className="ns-btn ns-o ns-sm" onClick={endSessionNow}>Skip to end</button>
+            </div>
+          )}
         </div>
       </div>
       {staffMode && <StaffPanel s={s} />}
@@ -266,11 +335,12 @@ export default function NumberSense() {
 
 // ---------------------------------------------------------------- header / progress
 
-function Header({ s }) {
+function Header({ s, onBack }) {
   const skillName = s.skill.status[E.SKILLS[s.skill.current].id] === "Learning" ? E.SKILLS[s.skill.current].name : "not set";
   const partLabel = { intro: "Start", placement: "Placement", "placement-end": "Placement complete", session: "Session", "session-end": "Session complete" }[s.phase];
   return (
     <div className="ns-shead">
+      <button type="button" className="ns-btn ns-o" onClick={onBack}>← Training menu</button>
       <b>Number sense practice · Session 1 of {CFG.MIN_SESSIONS}+</b>
       <span className="ns-tag">{partLabel}</span>
       <span className="ns-tag">Skill: {skillName}</span>
@@ -285,6 +355,7 @@ function Intro({ onStart }) {
     <div className="ns-intro">
       <p className="ns-lab">Session 1 · Number sense practice</p>
       <h1>Getting a feel for how big numbers are</h1>
+      <p className="ns-msg"><b>This is a trial/demo page.</b> The course numbers and priorities you'll see are placeholder examples, not real course content, and nothing you do here is saved between visits yet.</p>
       <p>You will place numbers on a line, compare them, switch between forms such as 0.25, 25% and 1/4, and judge the size of results. You do not need to calculate exactly.</p>
       <p className="ns-msg">There is no timer on screen and nobody else sees your answers. Sessions last {CFG.SESSION_MINUTES} minutes, 3 to 4 times a week.</p>
       <div><button type="button" className="ns-btn" onClick={onStart}>Start</button></div>
@@ -298,7 +369,6 @@ function PlacementEnd({ skill, onStart }) {
     <div className="ns-intro">
       <p className="ns-lab">Placement complete</p>
       <h1>Your starting point: {name}</h1>
-      <p>Skills before it count as known and come back now and then as review. Skills after it unlock as you go.</p>
       <p className="ns-msg">Priorities shown here are placeholder course data until the before-term preparation flow is built.</p>
       <div><button type="button" className="ns-btn" onClick={onStart}>Start the session</button></div>
     </div>
@@ -422,7 +492,7 @@ function NumberLine({ line, marks = [], interactive = false, onConfirm }) {
         {interactive && pos != null && <div className="ns-mk is-you" style={{ left: pos * 100 + "%" }} />}
       </div>
       {interactive && (
-        <button type="button" className="ns-btn" style={{ marginTop: 12 }} disabled={pos == null} onClick={() => onConfirm(pos)}>Confirm</button>
+        <button type="button" className="ns-btn" style={{ marginTop: 22 }} disabled={pos == null} onClick={() => onConfirm(pos)}>Confirm</button>
       )}
     </div>
   );
@@ -452,15 +522,16 @@ function ThreeViews({ nums, line, youPos }) {
   );
 }
 
-function Feedback({ result, onContinue }) {
+function Feedback({ result, readOnly }) {
   const { ok, moved, item, mode, youPos } = result;
   return (
     <div>
+      {readOnly && <p className="ns-lab">Reviewing a previous item (read-only)</p>}
       <div className="ns-res">{ok ? "Correct" : "Not correct"}</div>
       {mode !== "placement" && <ThreeViews nums={item.nums} line={item.line} youPos={youPos} />}
       {moved && <p className="ns-msg"><b>{moved.direction === "forward" ? "Skill passed. Next skill: " + moved.skill + "." : "Several wrong in a row. Moving back to " + moved.skill + " for now."}</b></p>}
       {result.repairQueued && <p className="ns-msg">This kind of error came up more than once, so a short repair task comes next.</p>}
-      <button type="button" className="ns-btn" onClick={onContinue}>Continue (Space)</button>
+      <p className="ns-msg">Press Next below (or Space) to continue.</p>
     </div>
   );
 }
