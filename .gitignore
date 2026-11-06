@@ -10,3 +10,6 @@ backend/data/*.tmp
 # Screening sessions (student responses) are local data, not code
 backend/data/screening_sessions/
 ~$*
+
+# Local Python environment
+.venv/

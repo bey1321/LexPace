@@ -8,6 +8,7 @@ import EmptyPage from "./pages/EmptyPage.jsx";
 import CoursePage from "./pages/CoursePage.jsx";
 import LexPace from "./pages/lexpace/LexPace.jsx";
 import TrainingStandalone from "./pages/standalone/TrainingStandalone.jsx";
+import SasPortal from "./pages/SasPortal.jsx";
 
 function Shell() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="grades" element={<EmptyPage title="Grades" icon="grades" text="No grades have been posted yet." />} />
         <Route path="tools" element={<Tools />} />
         <Route path="lexpace-hub/*" element={<LexPace />} />
+        <Route path="sas-portal" element={<SasPortal />} />
         {/* Old entry points now live in LexPace */}
         <Route path="tools/screening" element={<Navigate to="/lexpace-hub/check" replace />} />
         <Route path="tools/training" element={<Navigate to="/lexpace-hub/training" replace />} />

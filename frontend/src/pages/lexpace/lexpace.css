@@ -60,3 +60,12 @@
 .lxh-preview li span { color: var(--bb-muted); }
 .lxh-preview-who { color: var(--bb-muted); }
 .lxh-empty p { margin: 0 0 12px; }
+
+/* LexPace check: the bar takes the village's green, with Check / Results tabs */
+.lxh-check-bar { display: flex; align-items: center; gap: 24px; flex: none; padding: 14px 38px; background: var(--bb-surface); border-bottom: 1px solid var(--bb-border); }
+.lxh-tabs { display: flex; gap: 6px; }
+.lxh-tab { padding: 8px 16px; border-radius: 999px; font-weight: 600; color: #26394a; text-decoration: none; border: 1px solid transparent; }
+.lxh-tab:hover { background: #cfe0cf; }
+.lxh-tab.is-on { background: #fff; border-color: #b9cdb9; }
+.lxh-tab.is-off { opacity: .5; cursor: not-allowed; }
+.lxh-tab.is-off:hover { background: none; }

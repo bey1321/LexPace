@@ -27,9 +27,16 @@ _load_dotenv()
 
 # LLM (question generation + written-expression scoring). Without a key the pipeline
 # serves the validated starter items instead, so the demo also works offline.
-LLM_MODEL = os.environ.get("LEXPACE_LLM_MODEL", "claude-opus-5-5")
-LLM_ENABLED = os.environ.get("LEXPACE_LLM", "1") != "0" and bool(
-    os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")
+# Provider: Claude (ANTHROPIC_API_KEY) or Gemini (GEMINI_API_KEY); LEXPACE_LLM_PROVIDER picks one if both are set.
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or ""
+_HAS_CLAUDE = bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN"))
+LLM_PROVIDER = os.environ.get("LEXPACE_LLM_PROVIDER") or ("claude" if _HAS_CLAUDE else "gemini" if GEMINI_API_KEY else "claude")
+LLM_MODEL = os.environ.get("LEXPACE_LLM_MODEL") or ("gemini-3.5-flash" if LLM_PROVIDER == "gemini" else "claude-opus-5-5")
+# Gemini: when a model is rate limited (free tier: a few requests per minute per model), try the next one.
+GEMINI_FALLBACK_MODELS = [m.strip() for m in os.environ.get(
+    "LEXPACE_GEMINI_FALLBACK_MODELS", "gemini-3.5-flash-lite,gemini-3.1-flash-lite").split(",") if m.strip()]
+LLM_ENABLED = os.environ.get("LEXPACE_LLM", "1") != "0" and (
+    bool(GEMINI_API_KEY) if LLM_PROVIDER == "gemini" else _HAS_CLAUDE
 )
 LLM_TIMEOUT_S = float(os.environ.get("LEXPACE_LLM_TIMEOUT", "45"))
 # Server-side refusal fallback (beta). Set LEXPACE_LLM_FALLBACKS=0 to turn it off.
