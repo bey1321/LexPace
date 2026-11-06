@@ -30,6 +30,24 @@ const GROUPS = {
 function phaseName(p) { return p === "practice" ? "Practice" : p === "baseline" ? "Starting pace" : "Training"; }
 
 function initial() {
+  // TEMPORARY, for diagnosing the erase-animation bug report: ?debugskip=training jumps
+  // straight into session 1's training group (erase: true) with a placeholder rate, bypassing
+  // the baseline-collection grind (which needs real, correctly-answered reading trials - not
+  // reachable by quickly clicking through test sentences without actually reading them).
+  // Remove this whole param check once the animation is confirmed working or not.
+  if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("debugskip") === "training") {
+    const g = GROUPS[1][1];
+    return {
+      screen: "ready", session: 1, groupIdx: 1,
+      queue: g.bank.slice(), extraQueue: g.extra.slice(),
+      cur: null, trial: null,
+      rate: 400, streak: 0,
+      baselineTrials: [], done: 0, paused: false,
+      log: [], logN: { practice: 0, baseline: 0, training: 0 },
+      lastResult: null,
+      history: [], reviewIdx: null,
+    };
+  }
   return {
     screen: "group-intro", session: 0, groupIdx: 0,
     queue: GROUPS[0][0].bank.slice(), extraQueue: GROUPS[0][0].extra.slice(),
