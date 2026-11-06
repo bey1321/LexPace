@@ -32,8 +32,11 @@ st.markdown(
 )
 
 
-@st.cache_data
 def load_html() -> str:
+    # Deliberately uncached: this reads a small local file once per rerun, and caching it
+    # caused a real bug - Streamlit's code-push hot-reload re-executes this script without
+    # restarting the process, so a cached result survives even after training-standalone.html
+    # changes on disk, silently serving stale (in one case, broken) content.
     return HTML_PATH.read_text(encoding="utf-8")
 
 
