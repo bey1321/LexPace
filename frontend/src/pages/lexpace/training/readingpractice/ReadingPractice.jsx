@@ -368,34 +368,25 @@ function Sentence({ text, erase, rate, onComplete, onFreeze, requestEndRef }) {
   const n = chars.length;
 
   useEffect(() => {
-    let done = false, rafId = null, t0 = null, last = null, erased = 0, tick = 0;
+    let done = false, rafId = null, t0 = null, last = null, erased = 0;
     const el = containerRef.current;
-    console.log("[RF-DEBUG] Sentence mounted", { erase, rate, n, FREEZE_MS: CFG.FREEZE_MS });
 
     function finish(reason, rt) {
       if (done) return;
       done = true;
       cancelAnimationFrame(rafId);
-      console.log("[RF-DEBUG] finish()", { reason, rt, erased, n, ticks: tick });
       onComplete({ reason, rt, charsErased: erased, totalChars: n });
     }
 
     function frame(ts) {
       if (done) return;
-      tick++;
       if (t0 === null) {
         t0 = ts; last = ts;
         if (el) el.style.visibility = "visible"; // first painted frame: reveal (never before t=0)
-        console.log("[RF-DEBUG] first frame", { ts });
         rafId = requestAnimationFrame(frame);
         return;
       }
-      const gap = ts - last;
-      console.log("[RF-DEBUG] tick", { tick, ts: Math.round(ts), gap: Math.round(gap) });
-      if (gap > CFG.FREEZE_MS) {
-        console.log("[RF-DEBUG] FREEZE TRIGGERED", { gap: Math.round(gap), FREEZE_MS: CFG.FREEZE_MS, tick });
-        done = true; cancelAnimationFrame(rafId); onFreeze(); return;
-      }
+      if (ts - last > CFG.FREEZE_MS) { done = true; cancelAnimationFrame(rafId); onFreeze(); return; }
       last = ts;
       if (erase) {
         const elapsed = ts - t0;
